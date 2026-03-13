@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acute Stroke Management Guide — Harsh Patel, MD</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#2c3e50;min-height:100vh;display:flex;flex-direction:column}
+.header{background:linear-gradient(135deg,#1a2744,#2c4a7c);color:#fff;padding:20px 24px;flex-shrink:0}
+.header h1{font-size:1.4em;font-weight:700}
+.header p{font-size:.85em;opacity:.85;margin:4px 0 0}
+.header .author{font-size:.8em;opacity:.75}
+.layout{display:flex;flex:1;min-height:0}
+.sidebar{width:230px;min-width:230px;background:#f1f3f5;border-right:1px solid #dee2e6;padding:12px 0;overflow-y:auto;flex-shrink:0}
+.sidebar button{display:block;width:100%;text-align:left;padding:10px 16px;border:none;background:transparent;color:#2c3e50;font-size:.82em;font-weight:400;cursor:pointer;border-left:3px solid transparent;transition:all .15s;font-family:inherit}
+.sidebar button:hover{background:#e9ecef}
+.sidebar button.active{background:#1a2744;color:#fff;font-weight:700;border-left-color:#0e7c7b}
+.content{flex:1;padding:20px 28px;overflow-y:auto}
+h2{color:#1a2744;font-size:1.35em;border-bottom:3px solid #0e7c7b;padding-bottom:8px;margin-bottom:16px}
+h3{color:#0e7c7b;font-size:1.05em;margin:20px 0 8px;font-weight:700}
+p{margin-bottom:10px;line-height:1.6}
+.alert{padding:14px 18px;border-radius:6px;margin:14px 0;line-height:1.5}
+.at{font-weight:700;margin-bottom:4px}
+.ar{background:#fdf2f2;border-left:4px solid #c0392b}
+.aa{background:#fef9f0;border-left:4px solid #e67e22}
+.ag{background:#f0faf4;border-left:4px solid #27ae60}
+.ab{background:#f0f6fc;border-left:4px solid #0e7c7b}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.88em}
+th{background:#1a2744;color:#fff;padding:10px 12px;text-align:left;font-weight:600}
+td{padding:9px 12px;border-bottom:1px solid #dee2e6;vertical-align:top}
+tr:nth-child(even){background:#f8f9fa}
+.cl{background:#f8f9fa;padding:14px 18px;border-radius:6px;margin:12px 0}
+.cl ul{padding-left:18px;margin:0}
+.cl li{margin:5px 0;line-height:1.5}
+.tg{display:inline-block;padding:1px 6px;border-radius:3px;font-size:.8em;font-weight:600}
+.tg-g{background:#d4edda}.tg-b{background:#cce5ff}
+.footer{margin-top:30px;padding-top:12px;border-top:1px solid #dee2e6;font-size:.75em;color:#6c757d}
+.section{display:none}.section.active{display:block}
+@media(max-width:700px){
+.layout{flex-direction:column}
+.sidebar{width:100%;min-width:100%;display:flex;flex-wrap:wrap;padding:8px;gap:4px;border-right:none;border-bottom:1px solid #dee2e6}
+.sidebar button{width:auto;padding:6px 10px;font-size:.72em;border-left:none!important;border-radius:4px;white-space:nowrap}
+.sidebar button.active{border-radius:4px}
+.content{max-height:none}
+}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>Acute Stroke Management Guide</h1>
+<p>Telestroke Quick Reference — IV TNK • Extended Window • EVT</p>
+<p class="author">Harsh Patel, MD — Vascular Neurologist</p>
+</div>
+<div class="layout">
+<div class="sidebar" id="sb">
+<button class="active" data-t="s1">Code Stroke Activation</button>
+<button data-t="s2">FANG-D Score</button>
+<button data-t="s3">Imaging Protocol</button>
+<button data-t="s4">IV TNK ≤4.5h + Benefits&gt;Risks</button>
+<button data-t="s5">TNK Contraindications</button>
+<button data-t="s6">Extended TNK: Non-LVO (OPTION)</button>
+<button data-t="s7">Extended TNK: LVO (HOPE/TRACE)</button>
+<button data-t="s8">EVT Eligibility</button>
+<button data-t="s9">TNK Dosing</button>
+<button data-t="s10">Post-IVT Monitoring</button>
+<button data-t="s11">Trial Summary (IVT + EVT)</button>
+</div>
+<div class="content">
+
+<div class="section active" id="s1">
+<h2>Code Stroke Activation Criteria</h2>
+<h3>LKW ≤ 4.5 Hours</h3>
+<p>Activate code stroke if NOT suspected peripheral etiology and any of:</p>
+<div class="cl"><ul>
+<li><b>SUDDEN</b> trouble walking, loss of balance or coordination</li>
+<li><b>SUDDEN</b> trouble seeing in one or both eyes</li>
+<li><b>SUDDEN</b> numbness or weakness on one side of the body</li>
+<li><b>SUDDEN</b> confusion, trouble speaking or understanding</li>
+<li><b>SUDDEN</b> severe headache with no known cause + neuro symptoms</li>
+<li><b>SUDDEN</b>, unexplained comatose-like state</li>
+</ul></div>
+<h3>LKW &gt;4.5 – 24 Hours</h3>
+<div class="cl"><ul>
+<li>Sudden, unexplained comatose-like state, <b>OR</b></li>
+<li><b>FANG-D positive</b> (see FANG-D tab)</li>
+</ul></div>
+<h3>LKW &gt;24 Hours or Resolved Symptoms</h3>
+<p>No code stroke. Non-emergent imaging only. No CT perfusion role.</p>
+</div>
+
+<div class="section" id="s2">
+<h2>FANG-D Score: Qualitative LVO Screen</h2>
+<div class="alert ab"><div class="at">FANG-D positive = any ONE of the following:</div>Used for code stroke activation (&gt;4.5h) and imaging determination</div>
+<table><tr><th>Letter</th><th>Deficit</th><th>Details</th></tr>
+<tr><td><b>F</b></td><td>Field cut</td><td>Complete hemianopsia</td></tr>
+<tr><td><b>A</b></td><td>Aphasia</td><td>Severe aphasia (can't communicate meaningfully)</td></tr>
+<tr><td><b>N</b></td><td>Neglect</td><td>Severe hemi-attention / extinction to &gt;1 modality</td></tr>
+<tr><td><b>G</b></td><td>Gaze preference</td><td>Forced eye deviation or gaze preference</td></tr>
+<tr><td><b>D</b></td><td>Dense weakness</td><td>Any weakness limiting sustained effort against gravity</td></tr></table>
+<div class="alert ag"><div class="at">Clinical Pearl</div>NIHSS ≥6 generally captures disabling deficits, but specific deficits (isolated hemianopsia, severe aphasia) may be disabling even at NIHSS &lt;6.</div>
+<h3>NOT Clearly Disabling (IVT may not benefit)</h3>
+<div class="cl"><ul>
+<li>Isolated facial droop</li><li>Hemisensory loss only</li><li>Mild cortical hand weakness (esp. nondominant)</li><li>Mild hemimotor or hemisensorimotor loss</li><li>Mild hemiataxia (still ambulatory)</li><li>Isolated mild aphasia (still communicates meaningfully)</li>
+</ul></div>
+<p><em style="color:#6c757d">Can the patient do ADLs (Bathing, Ambulating, Toileting, Hygiene, Eating) if deficits persist?</em></p>
+</div>
+
+<div class="section" id="s3">
+<h2>Imaging Protocol by Time Window &amp; FANG-D</h2>
+<table><tr><th>Time from LKW</th><th>FANG-D Status</th><th>Imaging Order</th></tr>
+<tr><td><b>&lt;4.5 hours</b></td><td>FANG-D <b>Negative</b></td><td>CT Code Stroke Head W/O only. In select cases, may add CTA H&amp;N</td></tr>
+<tr><td><b>&lt;4.5 hours</b></td><td>FANG-D <b>Positive</b></td><td><b>CT Code Stroke WITH Perfusion</b> (NCCT + CTA H&amp;N + CTP)</td></tr>
+<tr><td><b>4.5–24 hours</b></td><td>FANG-D <b>Positive</b></td><td><b>CT Code Stroke WITH Perfusion</b> (NCCT + CTA H&amp;N + CTP)</td></tr>
+<tr><td><b>4.5–24 hours</b></td><td>FANG-D <b>Negative</b></td><td>Non-emergent (CT head W/O ± CTA H&amp;N). No CTP.</td></tr>
+<tr><td><b>&gt;24 hours</b></td><td>Any</td><td>Non-emergent brain imaging. No CTP role.</td></tr></table>
+<div class="alert aa"><div class="at">Tip</div>If ordering CTA chest dissection protocol, also recommend CTA head and neck.</div>
+</div>
+
+<div class="section" id="s4">
+<h2>IV TNK Within 4.5 Hours (AHA 2026 Class I)</h2>
+<h3>Eligibility</h3>
+<div class="cl"><ul><li>Age ≥ 18 years</li><li>Measurable, <b>disabling</b> neurologic deficit</li><li>Symptom onset (or LKW) ≤ 4.5 hours</li><li>No hemorrhage on NCCT</li><li>No contraindications (see TNK Contraindications tab)</li></ul></div>
+<div class="alert ag"><div class="at">AHA 2026 Key Update</div><b>Tenecteplase 0.25 mg/kg (max 25 mg)</b> or alteplase 0.9 mg/kg is recommended (Class I). Initiate ASAP. Do NOT delay for CTA/CTP or MRI within 4.5h — NCCT alone is sufficient.</div>
+<h3>Examples of Clearly Disabling Deficits (IVT Indicated)</h3>
+<div class="cl"><ul><li>NIHSS ≥ 6</li><li>Complete hemianopsia</li><li>Severe aphasia (inability to communicate meaningfully)</li><li>Severe hemi-attention or extinction to &gt;1 modality (neglect)</li><li>Forced eye deviation or gaze preference</li><li>Any weakness limiting sustained effort against gravity</li></ul></div>
+<h3>Examples of NOT Clearly Disabling Deficits (IVT May NOT Benefit)</h3>
+<div class="alert ar"><div class="at">Class 3: No Benefit for IVT</div>For non-disabling deficits, trials failed to show IVT benefit. <b>Dual antiplatelet therapy (DAPT)</b> is preferred.</div>
+<div class="cl"><ul><li>Isolated facial droop</li><li>Hemisensory loss only</li><li>Mild cortical hand weakness (esp. nondominant, NIHSS 0 in motor)</li><li>Mild hemimotor or hemisensorimotor loss</li><li>Mild hemiataxia (still ambulatory)</li><li>Isolated mild aphasia (still communicates meaningfully)</li></ul></div>
+<p><em style="color:#6c757d">Can the patient do ADLs (Bathing, Ambulating, Toileting, Hygiene, Eating) if deficits persist?</em></p>
+<h3>Conditions Where Benefits of IVT &gt; Risks of Bleeding</h3>
+<p>These conditions should NOT prevent IVT if the patient otherwise meets eligibility:</p>
+<table><tr><th>Condition</th><th>Consideration</th></tr>
+<tr><td>Extracranial cervical dissections</td><td>Reasonably safe within 4.5 h and probably recommended</td></tr>
+<tr><td>Extra-axial intracranial neoplasms</td><td>Risk of harm is likely low; benefit likely outweighs risk</td></tr>
+<tr><td>Angiographic procedural stroke</td><td>IVT during or immediately post-angiography should be considered</td></tr>
+<tr><td>Unruptured intracranial aneurysm</td><td>Risk of harm is likely low; benefit likely outweighs risk</td></tr>
+<tr><td>History of GI/GU bleeding</td><td>Previous remote history that is stable — consider on individual basis with GI/GU consultation</td></tr>
+<tr><td>History of MI</td><td>IVT probably has greater benefit than risk</td></tr>
+<tr><td>Recreational drug use</td><td>IVT probably has greater benefit than risk in most patients</td></tr>
+<tr><td>Uncertainty of stroke diagnosis / mimics</td><td>Unless absolute contraindications exist, risk of harm is low; benefit likely outweighs risk</td></tr>
+<tr><td>Moya-Moya disease</td><td>Does not appear to increase ICH risk; benefit likely outweighs risk</td></tr></table>
+</div>
+
+<div class="section" id="s5">
+<h2>TNK Contraindications (AHA 2026)</h2>
+<h3>Absolute Contraindications</h3>
+<table><tr><th>Condition</th><th>Details</th></tr>
+<tr><td>CT with extensive hypodensity</td><td>Brain imaging shows clear hypodensity responsible for symptoms (density greater than contralateral unaffected white matter)</td></tr>
+<tr><td>CT with hemorrhage</td><td>CT reveals acute intracranial hemorrhage</td></tr>
+<tr><td>Moderate–severe TBI <b>&lt;14 days</b></td><td>TBI within 14 days with &gt;30 min unconsciousness, GCS &lt;13, or evidence of hemorrhage/contusion/skull fracture</td></tr>
+<tr><td>Neurosurgery <b>&lt;14 days</b></td><td>Intracranial/spinal surgery within 14 days — IVT potentially harmful</td></tr>
+<tr><td>Acute spinal cord injury within 3 months</td><td>IVT is likely contraindicated</td></tr>
+<tr><td>Intra-axial neoplasm</td><td>Patients harboring intra-axial intracranial neoplasm — IVT potentially harmful</td></tr>
+<tr><td>Infective endocarditis</td><td>Active infective endocarditis — IVT should not be administered</td></tr>
+<tr><td>Severe coagulopathy / thrombocytopenia</td><td>PLT &lt;100K, INR &gt;1.7, aPTT &gt;40s, or PT &gt;15s. Can initiate IVT before labs if no recent anticoagulant use, but stop if results abnormal.</td></tr>
+<tr><td>Aortic arch dissection</td><td>Known or suspected — IVT is potentially harmful</td></tr>
+<tr><td>Amyloid-related imaging abnormalities (ARIA)</td><td>Patients on amyloid immunotherapy or with ARIA — ICH risk unknown, IVT should be avoided</td></tr></table>
+<h3>Relative Contraindications (Individualized Risk–Benefit)</h3>
+<p>Require careful individualized assessment. IVT <em>may</em> be considered after weighing stroke severity vs bleeding risk:</p>
+<table><tr><th>Condition</th><th>Consideration</th></tr>
+<tr><td>Pre-existing disability</td><td>Benefits vs risks uncertain with pre-existing disability/frailty. Determine on individual basis.</td></tr>
+<tr><td>DOAC exposure (&lt;48 h)</td><td>Safety unknown. Consider timing, renal function, severity, reversal agents, anti-factor Xa/thrombin assays.</td></tr>
+<tr><td>Ischemic stroke within 3 months</td><td>May increase ICH risk. Weigh timing/size of prior stroke vs benefits. Individualize.</td></tr>
+<tr><td>Prior ICH</td><td>May increase sICH risk. CAA patients higher risk. ICH due to modifiable conditions may have greater benefit.</td></tr>
+<tr><td>Recent major non-CNS trauma (14d–3mo)</td><td>Increased risk of serious systemic hemorrhage. Individual consideration with surgical consultation.</td></tr>
+<tr><td>Recent major non-CNS surgery w/in 10 days</td><td>Increased risk. Individual consideration, surgical area, and surgical expert consultation.</td></tr>
+<tr><td>Recent GI/GU bleeding w/in 21 days</td><td>Increased risk. GI/GU consultation to determine if bleeding treated and risk reduced.</td></tr>
+<tr><td>Intracranial arterial dissection</td><td>Safety of IVT is unknown</td></tr>
+<tr><td>Intracranial vascular malformations</td><td>Safety with unruptured/untreated vascular malformation is unknown</td></tr>
+<tr><td>Recent STEMI w/in 3 months</td><td>Individual risk/benefit with emergent cardiology consultation. Very recent STEMI: consider hemopericardium risk.</td></tr>
+<tr><td>Acute pericarditis</td><td>May be reasonable for major AIS likely to produce severe disability. Emergent cardiology consultation.</td></tr>
+<tr><td>Left atrial or ventricular thrombus</td><td>May be reasonable for major AIS likely to produce severe disability. Emergent cardiology consultation.</td></tr>
+<tr><td>Systemic active malignancy</td><td>Safety unknown. Oncology consultation. Consider type, stage, and active complications.</td></tr>
+<tr><td>Pregnancy and post-partum period</td><td>May be considered when benefits outweigh uterine bleeding risk. Emergent obstetrical consultation.</td></tr>
+<tr><td>Dural puncture w/in 7 days</td><td>May be considered on individual basis</td></tr>
+<tr><td>Arterial puncture noncompressible site w/in 7 days</td><td>Safety after puncture of noncompressible vessel (e.g., subclavian artery) is unknown</td></tr>
+<tr><td>Moderate–severe TBI (≥14 days to 3 months)</td><td>May be considered. Based on type/severity of injury with neurosurgical/neurocritical care input.</td></tr>
+<tr><td>Neurosurgery ≥14 days to 3 months</td><td>Consider on individual basis. Neurosurgical consultation recommended.</td></tr></table>
+<div class="alert aa"><div class="at">Key Principle</div>When in doubt — weigh severity and disability of the presenting stroke against bleeding risk. For severe, clearly disabling deficits, IVT benefit generally outweighs risk. Consultation with stroke neurology is recommended.</div>
+</div>
+
+<div class="section" id="s6">
+<h2>Extended Window IV TNK: Non-LVO / MeVO / DVO</h2>
+<p><em style="color:#6c757d">4.5–24 hours • Based on OPTION trial • Limited to FANG-D positive patients</em></p>
+<div class="alert ab"><div class="at">OPTION Trial (JAMA 2026)</div>IV TNK 0.25 mg/kg in non-LVO with salvageable tissue: mRS 0–1 at 90d: 43.6% vs 34.2% (RR 1.28, P=0.02, NNT=11). sICH: 2.8% vs 0%.</div>
+<h3>Inclusion Criteria</h3>
+<div class="cl"><ul>
+<li>Age ≥ 18</li><li><b>FANG-D positive</b> (local requirement)</li><li>NIHSS 6–25 (or 4–5 with disabling deficit)</li><li>Pre-stroke mRS 0 or 1</li><li>LKW <b>4.5 to 24 hours</b></li>
+<li>Qualifying vessel: M2, M3-M4, ACA, PCA, stenosis, or <b>vertebrobasilar occlusion not eligible for EVT</b></li>
+<li><b>CTP mismatch:</b> core &lt;50 mL, ratio ≥1.2, mismatch vol ≥10 mL</li></ul></div>
+<h3>Exclusion Criteria</h3>
+<div class="cl"><ul>
+<li><b>Extensive hypodensity on NCCT</b> (clear hypodensity responsible for symptoms — density greater than contralateral unaffected white matter)</li>
+<li><b>NCCT hypodensity larger than CTP-defined ischemic core</b> (mismatch inconsistency — significantly higher sICH risk)</li>
+<li><b>LVO present (ICA, M1, or vertebrobasilar) AND planned EVT</b></li>
+<li>Pre-stroke mRS &gt; 1</li><li>No CTP mismatch</li><li><b>FANG-D negative</b> (current local restriction)</li></ul></div>
+<div class="alert ar"><div class="at">Important</div>All absolute and relative contraindications for IV TNK within the standard 4.5-hour window (see TNK Contraindications tab) also apply to extended-window treatment. Review before administering.</div>
+<div class="alert aa"><div class="at">Safety Note</div>sICH: 2.8% vs 0%. Two of 21 patients with NCCT hypodensity larger than perfusion-defined core developed sICH. Carefully evaluate NCCT alongside perfusion.</div>
+</div>
+
+<div class="section" id="s7">
+<h2>Extended Window IV TNK: LVO (4.5–24h)</h2>
+<p><em style="color:#6c757d">For patients NOT eligible for EVT or anticipated delay ≥60–90 min</em></p>
+<div class="alert ab"><div class="at">Evidence</div><b>TRACE-III</b>: TNK in LVO w/o EVT → mRS 0–1: 33% vs 24.2% (RR 1.37, P=0.03)<br><b>HOPE</b>: Alteplase, no EVT → mRS 0–1: 40.3% vs 26.3% (aRR 1.52, P=0.004)<br><b>AHA 2026</b>: Class 2b</div>
+<h3>When to Consider</h3>
+<div class="cl"><ul><li>NOT a candidate for EVT</li><li>Anticipated delay to groin puncture ≥ 60–90 min</li><li>At spoke/PSC without thrombectomy + prolonged transfer</li></ul></div>
+<h3>Inclusion Criteria</h3>
+<div class="cl"><ul><li>Age ≥ 18</li><li>LVO: ICA, M1, M2 (TRACE-III); any occlusion (HOPE)</li><li>NIHSS 6–25 (TRACE-III) or 4–26 (HOPE)</li><li>Pre-stroke mRS 0 or 1</li><li>LKW <b>4.5 to 24 hours</b></li>
+<li><b>CTP mismatch:</b> core &lt;70 mL, ratio ≥1.8 (TRACE-III) or ≥1.2 (HOPE), mismatch vol ≥15 or ≥10 mL</li>
+<li>EVT NOT planned or delay ≥60–90 min</li></ul></div>
+<h3>Do NOT Give Extended-Window IVT If:</h3>
+<div class="alert ar"><ul style="padding-left:18px;margin:0"><li>EVT immediately available (within ~60 min)</li><li>Core ≥ 70 mL</li><li>No perfusion mismatch</li><li>Pre-stroke mRS ≥ 2</li><li>Standard IVT contraindications</li><li>Large NCCT hypodensity exceeding CTP core</li></ul></div>
+<div class="alert aa"><div class="at">Priority</div>If eligible for BOTH extended-window IVT AND EVT, <b>EVT takes priority</b>. IVT is bridging/standalone only when EVT unavailable or significantly delayed.</div>
+</div>
+
+<div class="section" id="s8">
+<h2>Mechanical Thrombectomy Eligibility</h2>
+<h3>Anterior Circulation — ICA/MCA, NIHSS ≥6</h3>
+<table><tr><th>Criterion</th><th>0–6h Window</th><th>6–24h Window</th></tr>
+<tr><td><b>ASPECTS ≥6</b></td><td>mRS 0–2, ICA/M1/pM2, Age ≥18 <span class="tg tg-g">I</span></td><td>mRS 0–2, ICA/M1/pM2 + CTP core &lt;70mL w/TMP or core &lt;50mL <span class="tg tg-g">I</span></td></tr>
+<tr><td><b>ASPECTS 3–5</b></td><td>mRS 0–1, ICA/M1, Age 18–85 <span class="tg tg-g">I</span></td><td>mRS 0–1, ICA/M1, Age &lt;80, no mass effect <span class="tg tg-g">I</span></td></tr>
+<tr><td><b>ASPECTS 0–2</b></td><td>mRS 0–1, ICA/M1, Age &lt;80 <span class="tg tg-b">2a</span></td><td>Insufficient evidence</td></tr></table>
+<p style="font-size:.82em;color:#6c757d">mRS 3–4 or unknown + radiographic criteria met → consider (2b). Large core exclusions: hemodialysis, metastatic CA, VAD, life exp &lt;1yr. TMP: mismatch vol ≥15mL, ratio ≥1.8.</p>
+<h3>Posterior Circulation — Basilar (Class I)</h3>
+<div class="cl"><ul><li>Basilar occlusion, mRS 0–1, NIHSS ≥10, PC-ASPECTS ≥6, within 24h</li></ul></div>
+<h3>Proximal M2 (Class 2a)</h3>
+<div class="cl"><ul><li>Dominant proximal M2, mRS 0–1, NIHSS ≥6, ASPECTS ≥6, within 6h</li></ul></div>
+</div>
+
+<div class="section" id="s9">
+<h2>TNK Dosing &amp; Administration</h2>
+<table><tr><th>Weight (kg)</th><th>TNK (mg)</th><th>Volume (mL)</th></tr>
+<tr><td>&lt;60</td><td>15</td><td>3</td></tr><tr><td>60–&lt;70</td><td>17.5</td><td>3.5</td></tr><tr><td>70–&lt;80</td><td>20</td><td>4</td></tr><tr><td>80–&lt;90</td><td>22.5</td><td>4.5</td></tr><tr><td>≥90</td><td>25</td><td>5</td></tr></table>
+<div class="cl"><ul><li>IV push over <b>5–10 seconds</b></li><li>Max dose: <b>25 mg</b></li><li><b>Do NOT delay</b> to obtain exact weight</li><li>If &lt;50 kg and accurate weight known, per-kg dosing may be used</li></ul></div>
+</div>
+
+<div class="section" id="s10">
+<h2>Post-Thrombolysis Monitoring</h2>
+<div class="cl"><ul>
+<li>Admit to ICU or stroke unit</li>
+<li>BP + neuro checks: <b>q15 min × 2h → q30 min × 6h → q1h until 24h</b></li>
+<li>Keep <b>SBP &lt;180</b>, <b>DBP &lt;105</b> post-IVT</li>
+<li>Do NOT target SBP &lt;140 (Class 3: No Benefit)</li>
+<li>Delay NG tubes, Foley, arterial lines if safely manageable</li>
+<li>If severe HA, acute HTN, N/V, or worsening exam → <b>STOP infusion → STAT CT head</b></li>
+<li>Follow-up CT/MRI at <b>24 hours</b> before starting antiplatelets/anticoagulants</li>
+</ul></div>
+</div>
+
+<div class="section" id="s11">
+<h2>Key Trial Summary</h2>
+
+<h3>11A. Landmark IVT Trials (Standard ≤4.5 h Window)</h3>
+<table><tr><th>Trial</th><th>Population</th><th>Window</th><th>Drug</th><th>Primary Outcome</th><th>Key Impact</th></tr>
+<tr><td><b>NINDS rt-PA</b><br>(NEJM 1995)</td><td>AIS, all types, n=624</td><td>≤3h</td><td>Alteplase 0.9</td><td>mRS 0–1: 39% vs 26%<br>OR 1.7, P&lt;0.001</td><td>First trial proving IVT benefit. FDA approval. NNT≈8. sICH 6.4% vs 0.6%.</td></tr>
+<tr><td><b>ECASS-III</b><br>(NEJM 2008)</td><td>AIS, age 18–80, n=821</td><td>3–4.5h</td><td>Alteplase 0.9</td><td>mRS 0–1: 52.4% vs 45.2%<br>OR 1.34, P=0.04</td><td>Extended window to 4.5h. Excluded age &gt;80, NIHSS &gt;25, OAC, prior stroke+DM. sICH 2.4% vs 0.2%.</td></tr>
+<tr><td><b>IST-3</b><br>(Lancet 2012)</td><td>AIS, no upper age limit, n=3,035</td><td>≤6h</td><td>Alteplase 0.9</td><td>OHS 0–2 at 6mo: 37% vs 35%<br>OR 1.13, P=0.25</td><td>Largest IVT trial. Supported benefit incl. age &gt;80. Contributed to pooled meta-analyses.</td></tr>
+<tr><td><b>WAKE-UP</b><br>(NEJM 2018)</td><td>Wake-up stroke, DWI-FLAIR mismatch, n=503</td><td>Unknown onset</td><td>Alteplase 0.9</td><td>mRS 0–1: 53.3% vs 41.8%<br>OR 1.61, P=0.02</td><td>Established MRI DWI-FLAIR mismatch for unknown-onset stroke.</td></tr></table>
+
+<h3>11B. TNK vs Alteplase Non-Inferiority Trials</h3>
+<table><tr><th>Trial</th><th>Population</th><th>Window</th><th>Comparison</th><th>Primary Outcome</th><th>Key Impact</th></tr>
+<tr><td><b>AcT</b><br>(Lancet 2022)</td><td>AIS, pragmatic, n=1,600</td><td>≤4.5h</td><td>TNK 0.25 vs alteplase</td><td>mRS 0–1: 36.9% vs 34.8%<br>Non-inferior</td><td>Largest TNK NI trial. Canadian pragmatic. sICH 3.4% vs 3.2%.</td></tr>
+<tr><td><b>TRACE-2</b><br>(Lancet 2023)</td><td>AIS, n=1,430</td><td>≤4.5h</td><td>TNK 0.25 vs alteplase</td><td>mRS 0–1: 62.7% vs 56.6%<br>Non-inferior</td><td>Trend toward TNK superiority. sICH 2.0% vs 2.0%.</td></tr>
+<tr><td><b>ATTEST-2</b><br>(Lancet Neurol 2024)</td><td>AIS, n=754</td><td>≤4.5h</td><td>TNK 0.25 vs alteplase</td><td>mRS 0–1: 56% vs 58%<br>Non-inferior</td><td>UK-based. sICH 3% vs 4%. Supports AHA 2026 Class I for TNK.</td></tr>
+<tr><td><b>TASTE</b><br>(Lancet Neurol 2024)</td><td>AIS, perfusion-selected, n=578</td><td>≤4.5h</td><td>TNK 0.25 vs alteplase</td><td>mRS 0–1: 57% vs 53%<br>Non-inferior</td><td>Australian. Perfusion imaging selection. NI confirmed.</td></tr></table>
+<div class="alert ag"><div class="at">Summary</div>Multiple RCTs confirmed TNK 0.25 mg/kg is non-inferior to alteplase within 4.5 h. TNK's single IV bolus (5–10 sec) vs alteplase's 1-hour infusion simplifies administration, reduces dosing errors, and shortens DTN/DIDO times — supporting AHA 2026 Class I for either agent.</div>
+
+<h3>11C. Extended-Window Thrombolysis Trials</h3>
+<table><tr><th>Trial</th><th>Population</th><th>Window</th><th>Drug</th><th>Primary (mRS 0–1)</th><th>sICH</th></tr>
+<tr><td><b>TRACE-III</b><br>(NEJM 2024)</td><td>LVO, no EVT, n=516</td><td>4.5–24h</td><td>TNK 0.25</td><td>33% vs 24.2%<br>RR 1.37</td><td>3.0% vs 0.8%</td></tr>
+<tr><td><b>HOPE</b><br>(JAMA 2025)</td><td>All, no EVT, n=372</td><td>4.5–24h</td><td>Alteplase</td><td>40.3% vs 26.3%<br>aRR 1.52</td><td>3.8% vs 0.5%</td></tr>
+<tr><td><b>OPTION</b><br>(JAMA 2026)</td><td>Non-LVO, n=566</td><td>4.5–24h</td><td>TNK 0.25</td><td>43.6% vs 34.2%<br>RR 1.28</td><td>2.8% vs 0%</td></tr>
+<tr><td><b>EXTEND</b><br>(NEJM 2019)</td><td>Mixed, n=225</td><td>4.5–9h</td><td>Alteplase</td><td>35.4% vs 29.5%<br>aOR 1.44</td><td>6.2% vs 0.9%</td></tr></table>
+
+<h3>11D. Landmark EVT Trials — Standard Core (ASPECTS ≥ 6)</h3>
+<table><tr><th>Trial</th><th>Key Criteria</th><th>Window</th><th>n</th><th>Primary Outcome</th><th>Notes</th></tr>
+<tr><td><b>MR CLEAN</b><br>(NEJM 2015)</td><td>ICA/M1/M2/A1/A2; NIHSS ≥2</td><td>≤6h</td><td>500</td><td>mRS shift: aOR 1.67<br>mRS 0–2: 32.6% vs 19.1%</td><td>First positive EVT RCT. NCCT + CTA only.</td></tr>
+<tr><td><b>DAWN</b><br>(NEJM 2018)</td><td>ICA/M1; mRS 0–1; Clinical-core mismatch</td><td>6–24h</td><td>206</td><td>mRS 0–2: 49% vs 13%</td><td>Extended window landmark. Small core required.</td></tr>
+<tr><td><b>DEFUSE-3</b><br>(NEJM 2018)</td><td>ICA/M1; mRS 0–2; Perfusion mismatch (ratio ≥1.8, core &lt;70 mL)</td><td>6–16h</td><td>182</td><td>mRS 0–2: 45% vs 17%<br>OR 2.77</td><td>Established CTP target mismatch profile.</td></tr></table>
+
+<h3>11E. Large-Core EVT Trials (ASPECTS 0–5 / Core ≥50 mL)</h3>
+<table><tr><th>Trial</th><th>Inclusion</th><th>Window</th><th>n</th><th>Primary (EVT vs BMT)</th><th>sICH / Mortality</th></tr>
+<tr><td><b>RESCUE-Japan LIMIT</b><br>(NEJM 2022)</td><td>ICA/M1; ASPECTS 3–5; NIHSS ≥6; mRS 0–1</td><td>≤6h (or ≤24h no FLAIR Δ)</td><td>203</td><td>mRS 0–3: 31.0% vs 12.7%<br>cOR 2.43</td><td>sICH 9.0% vs 4.9%<br>Mort 18% vs 24%</td></tr>
+<tr><td><b>ANGEL-ASPECT</b><br>(NEJM 2023)</td><td>ICA/M1; ASPECTS 3–5 or core 70–100mL; Age 18–80</td><td>≤24h</td><td>456</td><td>mRS 0–3: 30.0% vs 11.6%<br>gOR 1.37</td><td>sICH 6.1% vs 2.7%<br>Mort 21.7% vs 20%</td></tr>
+<tr><td><b>SELECT2</b><br>(NEJM 2023)</td><td>ICA/M1; ASPECTS 3–5 or core ≥50mL; Age 18–85</td><td>≤24h</td><td>352</td><td>mRS 0–2: 20.3% vs 7.0%<br>gOR 1.51</td><td>sICH 0.6% vs 1.1%<br>Mort 38.4% vs 41.5%</td></tr>
+<tr><td><b>TENSION</b><br>(Lancet 2023)</td><td>ICA/M1; ASPECTS 3–5; NIHSS &lt;26; mRS 0–2</td><td>≤12h</td><td>253</td><td>mRS 0–3: 31.4% vs 16.1%<br>aOR 2.58</td><td>sICH 5.6% vs 4.8%<br>Mort 40.2% vs 51.2%</td></tr>
+<tr><td><b>LASTE</b><br>(NEJM 2024)</td><td>ICA/M1; ASPECTS 0–5; mRS 0–1; Age ≥80: ASPECTS 4–5 only</td><td>≤6.5h (or unknown w/ neg FLAIR)</td><td>333</td><td>mRS 0–3: 33.5% vs 12.0%<br>aOR 4.30</td><td>sICH 9.6% vs 5.7%<br>Mort 36.1% vs 55.4%</td></tr></table>
+<div class="alert ab"><div class="at">Meta-Analysis (Liu et al., Neurology 2025)</div>Across 6 large-core RCTs (n=1,887): EVT improved ordinal mRS (gOR 1.6, 95% CI 1.4–1.8), independent ambulation (mRS 0–3: RR 1.9), and reduced mortality (RR 0.9) despite higher sICH (RR 1.7). Benefit decreased with longer onset-to-treatment time.</div>
+</div>
+
+<div class="footer">Author: Harsh Patel, MD — Vascular Neurologist. Educational reference only. Based on AHA/ASA 2026 Guidelines, NINDS, ECASS-III, IST-3, WAKE-UP, AcT, TRACE-2, ATTEST-2, TASTE, OPTION, TRACE-III, HOPE, EXTEND, MR CLEAN, DAWN, DEFUSE-3, RESCUE-Japan LIMIT, ANGEL-ASPECT, SELECT2, TENSION, LASTE, and Liu et al. (Neurology 2025). March 2026.</div>
+</div></div>
+
+<script>
+document.querySelectorAll('#sb button').forEach(function(b){
+b.addEventListener('click',function(){
+document.querySelectorAll('#sb button').forEach(function(x){x.classList.remove('active')});
+document.querySelectorAll('.section').forEach(function(x){x.classList.remove('active')});
+this.classList.add('active');
+document.getElementById(this.dataset.t).classList.add('active');
+});
+});
+</script>
+</body>
+</html>
