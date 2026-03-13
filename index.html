@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acute Stroke Management Guide — Telestroke Quick Reference</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; }
+    body { font-family: 'IBM Plex Sans', system-ui, sans-serif; background: #f1f3f5; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #c0c8d8; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const sections = [
+      { id: "activation", label: "Code Stroke Activation" },
+      { id: "fangd", label: "FANG-D Score" },
+      { id: "imaging", label: "Imaging Protocol" },
+      { id: "ivt45", label: "IV TNK ≤4.5h" },
+      { id: "contra", label: "Contraindications" },
+      { id: "extended-nonlvo", label: "Extended: Non-LVO (OPTION)" },
+      { id: "extended-lvo", label: "Extended: LVO (HOPE/TRACE)" },
+      { id: "evt", label: "EVT Eligibility" },
+      { id: "dosing", label: "TNK Dosing" },
+      { id: "monitoring", label: "Post-IVT Monitoring" },
+      { id: "trials", label: "Trial Summary" },
+    ];
+
+    function AlertBox({ type, title, children }) {
+      const colors = {
+        red:   { bg: "#fdf2f2", border: "#c0392b", icon: "⚠" },
+        amber: { bg: "#fef9f0", border: "#e67e22", icon: "⚡" },
+        green: { bg: "#f0faf4", border: "#27ae60", icon: "✔" },
+        blue:  { bg: "#f0f6fc", border: "#0e7c7b", icon: "ℹ" },
+      };
+      const c = colors[type] || colors.blue;
+      return (
+        <div style={{ background: c.bg, borderLeft: `4px solid ${c.border}`, padding: "13px 16px", borderRadius: "6px", margin: "14px 0", fontSize: "0.9em" }}>
+          {title && <div style={{ fontWeight: 700, marginBottom: 6, color: c.border }}>{c.icon} {title}</div>}
+          {children}
+        </div>
+      );
+    }
+
+    function DataTable({ headers, rows }) {
+      return (
+        <div style={{ overflowX: "auto", margin: "14px 0", borderRadius: "8px", border: "1px solid #dee2e6", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.87em" }}>
+            <thead>
+              <tr>
+                {headers.map((h, i) => (
+                  <th key={i} style={{ background: "#1a2744", color: "#fff", padding: "10px 14px", textAlign: "left", fontWeight: 600, fontFamily: "'IBM Plex Sans', sans-serif", letterSpacing: "0.02em" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, ri) => (
+                <tr key={ri} style={{ background: ri % 2 === 0 ? "#fff" : "#f8f9fb" }}>
+                  {row.map((cell, ci) => (
+                    <td key={ci} style={{ padding: "9px 14px", borderBottom: "1px solid #e9ecef", verticalAlign: "top", lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: cell }} />
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
+    function CriteriaList({ items }) {
+      return (
+        <div style={{ background: "#f8f9fb", padding: "14px 18px", borderRadius: "8px", margin: "12px 0", border: "1px solid #e9ecef" }}>
+          <ul style={{ paddingLeft: 20, margin: 0 }}>
+            {items.map((item, i) => (
+              <li key={i} style={{ margin: "6px 0", lineHeight: 1.55, fontSize: "0.9em" }} dangerouslySetInnerHTML={{ __html: item }} />
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    function Badge({ label, color }) {
+      const bg = color === "green" ? "#d4edda" : color === "blue" ? "#cce5ff" : "#f8d7da";
+      const text = color === "green" ? "#155724" : color === "blue" ? "#004085" : "#721c24";
+      return <span style={{ background: bg, color: text, padding: "1px 6px", borderRadius: "4px", fontSize: "0.78em", fontWeight: 600, fontFamily: "'IBM Plex Mono', monospace", whiteSpace: "nowrap" }}>{label}</span>;
+    }
+
+    const styles = {
+      h2: { color: "#1a2744", fontSize: "1.3em", borderBottom: "3px solid #0e7c7b", paddingBottom: 10, marginBottom: 18, fontWeight: 700, letterSpacing: "-0.01em" },
+      h3: { color: "#0e7c7b", fontSize: "1.0em", marginTop: 22, marginBottom: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" },
+    };
+
+    function Content({ active }) {
+      switch (active) {
+        case "activation": return (
+          <div>
+            <h2 style={styles.h2}>Code Stroke Activation Criteria</h2>
+            <h3 style={styles.h3}>LKW ≤ 4.5 Hours</h3>
+            <p style={{ fontSize: "0.9em", marginBottom: 8 }}>Activate code stroke if NOT suspected peripheral etiology and any of:</p>
+            <CriteriaList items={[
+              "<b>SUDDEN</b> trouble walking, loss of balance or coordination",
+              "<b>SUDDEN</b> trouble seeing in one or both eyes",
+              "<b>SUDDEN</b> numbness or weakness on one side of the body",
+              "<b>SUDDEN</b> confusion, trouble speaking or understanding",
+              "<b>SUDDEN</b> severe headache with no known cause + neuro symptoms",
+              "<b>SUDDEN</b>, unexplained comatose-like state",
+            ]} />
+            <h3 style={styles.h3}>LKW &gt;4.5 – 24 Hours</h3>
+            <CriteriaList items={["Sudden, unexplained comatose-like state, <b>OR</b>", "<b>FANG-D positive</b> (see FANG-D tab)"]} />
+            <h3 style={styles.h3}>LKW &gt;24 Hours or Resolved Symptoms</h3>
+            <p style={{ fontSize: "0.9em" }}>No code stroke. Non-emergent imaging only. No CT perfusion role.</p>
+          </div>
+        );
+
+        case "fangd": return (
+          <div>
+            <h2 style={styles.h2}>FANG-D Score: Qualitative LVO Screen</h2>
+            <AlertBox type="blue" title="FANG-D positive = any ONE of the following:">
+              <p style={{ fontSize: "0.88em" }}>Used for code stroke activation (&gt;4.5h) and imaging determination</p>
+            </AlertBox>
+            <DataTable
+              headers={["Letter", "Deficit", "Details"]}
+              rows={[
+                ["<b>F</b>", "Field cut", "Complete hemianopsia"],
+                ["<b>A</b>", "Aphasia", "Severe aphasia (can't communicate meaningfully)"],
+                ["<b>N</b>", "Neglect", "Severe hemi-attention / extinction to &gt;1 modality"],
+                ["<b>G</b>", "Gaze preference", "Forced eye deviation or gaze preference"],
+                ["<b>D</b>", "Dense weakness", "Any weakness limiting sustained effort against gravity"],
+              ]}
+            />
+            <AlertBox type="green" title="Clinical Pearl">
+              NIHSS ≥6 generally captures disabling deficits, but specific deficits (isolated hemianopsia, severe aphasia) may be disabling even at NIHSS &lt;6.
+            </AlertBox>
+            <h3 style={styles.h3}>NOT Clearly Disabling (IVT may not benefit)</h3>
+            <CriteriaList items={[
+              "Isolated facial droop",
+              "Hemisensory loss only",
+              "Mild cortical hand weakness (esp. nondominant)",
+              "Mild hemimotor or hemisensorimotor loss",
+              "Mild hemiataxia (still ambulatory)",
+              "Isolated mild aphasia (still communicates meaningfully)",
+            ]} />
+            <p style={{ fontStyle: "italic", color: "#6c757d", fontSize: "0.85em", marginTop: 10 }}>Can the patient do ADLs (Bathing, Ambulating, Toileting, Hygiene, Eating) if deficits persist?</p>
+          </div>
+        );
+
+        case "imaging": return (
+          <div>
+            <h2 style={styles.h2}>Imaging Protocol by Time Window &amp; FANG-D</h2>
+            <DataTable
+              headers={["Time from LKW", "FANG-D Status", "Imaging Order"]}
+              rows={[
+                ["<b>&lt;4.5 hours</b>", "FANG-D <b>Negative</b>", "CT Code Stroke Head W/O only. In select cases, may add CTA H&amp;N"],
+                ["<b>&lt;4.5 hours</b>", "FANG-D <b>Positive</b>", "<b>CT Code Stroke WITH Perfusion</b> (NCCT + CTA H&amp;N + CTP)"],
+                ["<b>4.5–24 hours</b>", "FANG-D <b>Positive</b>", "<b>CT Code Stroke WITH Perfusion</b> (NCCT + CTA H&amp;N + CTP)"],
+                ["<b>4.5–24 hours</b>", "FANG-D <b>Negative</b>", "Non-emergent (CT head W/O ± CTA H&amp;N). No CTP."],
+                ["<b>&gt;24 hours</b>", "Any", "Non-emergent brain imaging. No CTP role."],
+              ]}
+            />
+            <AlertBox type="amber" title="Tip">
+              If ordering CTA chest dissection protocol, also recommend CTA head and neck.
+            </AlertBox>
+          </div>
+        );
+
+        case "ivt45": return (
+          <div>
+            <h2 style={styles.h2}>IV TNK Within 4.5 Hours (AHA 2026 Class I)</h2>
+            <h3 style={styles.h3}>Eligibility</h3>
+            <CriteriaList items={[
+              "Age ≥ 18 years",
+              "Measurable, <b>disabling</b> neurologic deficit",
+              "Symptom onset (or LKW) ≤ 4.5 hours",
+              "No hemorrhage on NCCT",
+              "No contraindications (see Contraindications tab)",
+            ]} />
+            <AlertBox type="green" title="AHA 2026 Key Update">
+              <b>Tenecteplase 0.25 mg/kg (max 25 mg)</b> or alteplase 0.9 mg/kg is recommended (Class I). Initiate ASAP. Do NOT delay for CTA/CTP or MRI within 4.5h — NCCT alone is sufficient.
+            </AlertBox>
+            <AlertBox type="red" title="Non-Disabling Deficits (Class 3: No Benefit for IVT)">
+              For non-disabling deficits (e.g., isolated sensory syndrome) in the 4.5h window, IVT trials failed to show benefit. <b>Dual antiplatelet therapy (DAPT)</b> is preferred.
+            </AlertBox>
+          </div>
+        );
+
+        case "contra": return (
+          <div>
+            <h2 style={styles.h2}>IVT Contraindications &amp; Special Situations</h2>
+            <h3 style={styles.h3}>Absolute Exclusions</h3>
+            <DataTable
+              headers={["Exclusion", "Details"]}
+              rows={[
+                ["Active internal bleeding", "Excludes menses"],
+                ["Significant head trauma or stroke", "Within prior 3 months"],
+                ["Intracranial/spinal surgery", "Within prior 3 months"],
+                ["Intracranial neoplasm, AVM, or aneurysm", "History of"],
+                ["Suspected aortic arch dissection", "Active"],
+                ["Bleeding diathesis", "PLT &lt;100K; INR &gt;1.7; aPTT elevated; therapeutic LMWH within 24h"],
+                ["Severe uncontrolled HTN", "SBP &gt;185 or DBP &gt;110 unresponsive to treatment"],
+                ["Infective endocarditis", "Active"],
+                ["DOAC within 48h", "Normal renal function. If reversal available → may consider"],
+              ]}
+            />
+            <h3 style={styles.h3}>Benefits Likely Outweigh Risks (AHA 2026)</h3>
+            <DataTable
+              headers={["Condition", "Notes"]}
+              rows={[
+                ["Mild but disabling (NIHSS &lt;5 w/ disabling deficit)", "IVT reasonable if clearly disabling"],
+                ["Major surgery within 14 days", "Weigh deficit vs surgical site risk"],
+                ["GI/GU hemorrhage within 21 days", "Consider severity of prior bleed"],
+                ["Arterial puncture noncompressible site 7d", "Higher local bleeding risk"],
+                ["Seizure at onset with postictal deficits", "If consistent with stroke → IVT reasonable"],
+                ["Glucose &lt;50 mg/dL", "Correct first; if deficits persist → treat as stroke"],
+                ["Pregnancy", "TNK/alteplase don't substantially cross placenta"],
+                ["Age &gt;80 in 3–4.5h window", "Age alone should not exclude"],
+                ["Prior stroke + diabetes in 3–4.5h", "Benefit outweighs risk"],
+                ["OAC with INR ≤1.7", "IVT can be considered"],
+                ["DOAC &gt;48h (normal renal)", "IVT can be considered"],
+                ["Cerebral microbleeds (1–10)", "Benefit likely outweighs small ↑ ICH risk"],
+                ["Early ischemic changes (&lt;1/3 MCA)", "Not a contraindication"],
+                ["Dementia", "Not a contraindication"],
+              ]}
+            />
+            <AlertBox type="red" title="Higher Caution">
+              <ul style={{ paddingLeft: 18, margin: 0, fontSize: "0.9em" }}>
+                <li>&gt;10 cerebral microbleeds — uncertain benefit, ↑ sICH risk</li>
+                <li>Giant/unsecured intracranial aneurysm — avoid IVT</li>
+                <li>Systemic malignancy (non-CNS) — weigh individually</li>
+              </ul>
+            </AlertBox>
+          </div>
+        );
+
+        case "extended-nonlvo": return (
+          <div>
+            <h2 style={styles.h2}>Extended Window IV TNK: Non-LVO / MeVO / DVO</h2>
+            <p style={{ fontStyle: "italic", color: "#6c757d", fontSize: "0.85em", marginBottom: 12 }}>4.5–24 hours • Based on OPTION trial • Limited to FANG-D positive patients</p>
+            <AlertBox type="blue" title="OPTION Trial (JAMA 2026)">
+              IV TNK 0.25 mg/kg in non-LVO with salvageable tissue: mRS 0–1 at 90d: 43.6% vs 34.2% (RR 1.28, P=0.02, NNT=11). sICH: 2.8% vs 0%.
+            </AlertBox>
+            <h3 style={styles.h3}>Inclusion Criteria</h3>
+            <CriteriaList items={[
+              "Age ≥ 18",
+              "<b>FANG-D positive</b> (local requirement)",
+              "NIHSS 6–25 (or 4–5 with disabling deficit)",
+              "Pre-stroke mRS 0 or 1",
+              "LKW <b>4.5 to 24 hours</b>",
+              "<b>No LVO</b>: no ICA, M1, or vertebrobasilar occlusion",
+              "Qualifying vessel: M2, M3-M4, ACA, PCA, or stenosis",
+              "<b>CTP mismatch:</b> core &lt;50 mL, ratio ≥1.2, mismatch vol ≥10 mL",
+            ]} />
+            <h3 style={styles.h3}>Exclusion Criteria</h3>
+            <CriteriaList items={[
+              "LVO present (ICA, M1, vertebrobasilar)",
+              "Planned EVT",
+              "Standard IVT contraindications",
+              "Pre-stroke mRS &gt; 1",
+              "No CTP mismatch",
+              "<b>FANG-D negative</b> (current local restriction)",
+            ]} />
+            <AlertBox type="amber" title="Safety Note">
+              sICH: 2.8% vs 0%. Carefully evaluate NCCT hypodensity alongside perfusion — mismatch inconsistency raises sICH risk.
+            </AlertBox>
+          </div>
+        );
+
+        case "extended-lvo": return (
+          <div>
+            <h2 style={styles.h2}>Extended Window IV TNK: LVO (4.5–24h)</h2>
+            <p style={{ fontStyle: "italic", color: "#6c757d", fontSize: "0.85em", marginBottom: 12 }}>For patients NOT eligible for EVT or anticipated delay ≥60–90 min</p>
+            <AlertBox type="blue" title="Evidence">
+              <b>TRACE-III</b>: TNK in LVO w/o EVT → mRS 0–1: 33% vs 24.2% (RR 1.37, P=0.03)<br/>
+              <b>HOPE</b>: Alteplase, no EVT → mRS 0–1: 40.3% vs 26.3% (aRR 1.52, P=0.004)<br/>
+              <b>AHA 2026</b>: Class 2b
+            </AlertBox>
+            <h3 style={styles.h3}>When to Consider</h3>
+            <CriteriaList items={[
+              "NOT a candidate for EVT",
+              "Anticipated delay to groin puncture ≥ 60–90 min",
+              "At spoke/PSC without thrombectomy + prolonged transfer",
+            ]} />
+            <h3 style={styles.h3}>Inclusion Criteria</h3>
+            <CriteriaList items={[
+              "Age ≥ 18",
+              "LVO: ICA, M1, M2 (TRACE-III); any occlusion (HOPE)",
+              "NIHSS 6–25 (TRACE-III) or 4–26 (HOPE)",
+              "Pre-stroke mRS 0 or 1",
+              "LKW <b>4.5 to 24 hours</b>",
+              "<b>CTP mismatch:</b> core &lt;70 mL, ratio ≥1.8 (TRACE-III) or ≥1.2 (HOPE), mismatch vol ≥15 or ≥10 mL",
+              "EVT NOT planned or delay ≥60–90 min",
+            ]} />
+            <h3 style={styles.h3}>Do NOT Give Extended-Window IVT If:</h3>
+            <AlertBox type="red">
+              <ul style={{ paddingLeft: 18, margin: 0, fontSize: "0.9em" }}>
+                <li>EVT immediately available (within ~60 min)</li>
+                <li>Core ≥ 70 mL</li>
+                <li>No perfusion mismatch</li>
+                <li>Pre-stroke mRS ≥ 2</li>
+                <li>Standard IVT contraindications</li>
+                <li>Large NCCT hypodensity exceeding CTP core</li>
+              </ul>
+            </AlertBox>
+            <AlertBox type="amber" title="Priority">
+              If eligible for BOTH extended-window IVT AND EVT, <b>EVT takes priority</b>. IVT is bridging/standalone only when EVT unavailable or significantly delayed.
+            </AlertBox>
+          </div>
+        );
+
+        case "evt": return (
+          <div>
+            <h2 style={styles.h2}>Mechanical Thrombectomy Eligibility</h2>
+            <h3 style={styles.h3}>Anterior Circulation — ICA/MCA, NIHSS ≥6</h3>
+            <DataTable
+              headers={["Criterion", "0–6h Window", "6–24h Window"]}
+              rows={[
+                ["<b>ASPECTS ≥6</b>", "mRS 0–2, ICA/M1/pM2, Age ≥18 <span style='background:#d4edda;color:#155724;padding:1px 6px;border-radius:3px;font-size:0.78em;font-weight:700'>I</span>", "mRS 0–2, ICA/M1/pM2 + CTP core &lt;70mL w/TMP or core &lt;50mL <span style='background:#d4edda;color:#155724;padding:1px 6px;border-radius:3px;font-size:0.78em;font-weight:700'>I</span>"],
+                ["<b>ASPECTS 3–5</b>", "mRS 0–1, ICA/M1, Age 18–85 <span style='background:#d4edda;color:#155724;padding:1px 6px;border-radius:3px;font-size:0.78em;font-weight:700'>I</span>", "mRS 0–1, ICA/M1, Age &lt;80, no mass effect <span style='background:#d4edda;color:#155724;padding:1px 6px;border-radius:3px;font-size:0.78em;font-weight:700'>I</span>"],
+                ["<b>ASPECTS 0–2</b>", "mRS 0–1, ICA/M1, Age &lt;80 <span style='background:#cce5ff;color:#004085;padding:1px 6px;border-radius:3px;font-size:0.78em;font-weight:700'>2a</span>", "Insufficient evidence"],
+              ]}
+            />
+            <p style={{ fontSize: "0.82em", color: "#6c757d", margin: "8px 0 16px" }}>mRS 3–4 or unknown + radiographic criteria met → consider (2b). Large core exclusions: hemodialysis, metastatic CA, VAD, life exp &lt;1yr. TMP: mismatch vol ≥15mL, ratio ≥1.8.</p>
+            <h3 style={styles.h3}>Posterior Circulation — Basilar (Class I)</h3>
+            <CriteriaList items={["Basilar occlusion, mRS 0–1, NIHSS ≥10, PC-ASPECTS ≥6, within 24h"]} />
+            <h3 style={styles.h3}>Proximal M2 (Class 2a)</h3>
+            <CriteriaList items={["Dominant proximal M2, mRS 0–1, NIHSS ≥6, ASPECTS ≥6, within 6h"]} />
+          </div>
+        );
+
+        case "dosing": return (
+          <div>
+            <h2 style={styles.h2}>TNK Dosing &amp; Administration</h2>
+            <DataTable
+              headers={["Weight (kg)", "TNK (mg)", "Volume (mL)"]}
+              rows={[
+                ["&lt;60", "15", "3"],
+                ["60–&lt;70", "17.5", "3.5"],
+                ["70–&lt;80", "20", "4"],
+                ["80–&lt;90", "22.5", "4.5"],
+                ["≥90", "25", "5"],
+              ]}
+            />
+            <CriteriaList items={[
+              "IV push over <b>5–10 seconds</b>",
+              "Max dose: <b>25 mg</b>",
+              "<b>Do NOT delay</b> to obtain exact weight",
+              "If &lt;50 kg and accurate weight known, per-kg dosing may be used",
+            ]} />
+          </div>
+        );
+
+        case "monitoring": return (
+          <div>
+            <h2 style={styles.h2}>Post-Thrombolysis Monitoring</h2>
+            <CriteriaList items={[
+              "Admit to ICU or stroke unit",
+              "BP + neuro checks: <b>q15 min × 2h → q30 min × 6h → q1h until 24h</b>",
+              "Keep <b>SBP &lt;180</b>, <b>DBP &lt;105</b> post-IVT",
+              "Do NOT target SBP &lt;140 (Class 3: No Benefit)",
+              "Delay NG tubes, Foley, arterial lines if safely manageable",
+              "If severe HA, acute HTN, N/V, or worsening exam → <b>STOP infusion → STAT CT head</b>",
+              "Follow-up CT/MRI at <b>24 hours</b> before starting antiplatelets/anticoagulants",
+            ]} />
+          </div>
+        );
+
+        case "trials": return (
+          <div>
+            <h2 style={styles.h2}>Key Extended-Window Trials</h2>
+            <DataTable
+              headers={["Trial", "Population", "Window", "Drug", "Primary (mRS 0–1)", "sICH"]}
+              rows={[
+                ["<b>TRACE-III</b><br/><span style='font-size:0.8em;color:#888'>NEJM 2024</span>", "LVO, no EVT, n=516", "4.5–24h", "TNK 0.25", "33% vs 24.2%<br/>RR 1.37", "3.0% vs 0.8%"],
+                ["<b>HOPE</b><br/><span style='font-size:0.8em;color:#888'>JAMA 2025</span>", "All, no EVT, n=372", "4.5–24h", "Alteplase", "40.3% vs 26.3%<br/>aRR 1.52", "3.8% vs 0.5%"],
+                ["<b>OPTION</b><br/><span style='font-size:0.8em;color:#888'>JAMA 2026</span>", "Non-LVO, n=566", "4.5–24h", "TNK 0.25", "43.6% vs 34.2%<br/>RR 1.28", "2.8% vs 0%"],
+                ["<b>EXTEND</b><br/><span style='font-size:0.8em;color:#888'>NEJM 2019</span>", "Mixed, n=225", "4.5–9h", "Alteplase", "35.4% vs 29.5%<br/>aOR 1.44", "6.2% vs 0.9%"],
+              ]}
+            />
+          </div>
+        );
+
+        default: return null;
+      }
+    }
+
+    function MobileNav({ active, setActive, open, setOpen }) {
+      return (
+        <div style={{ display: "none" }} className="mobile-nav">
+          <button onClick={() => setOpen(!open)} style={{ padding: "8px 14px", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", color: "#fff", borderRadius: 6, cursor: "pointer", fontSize: "0.85em", fontWeight: 600 }}>
+            ☰ {sections.find(s => s.id === active)?.label}
+          </button>
+          {open && (
+            <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#1a2744", zIndex: 100, boxShadow: "0 4px 20px rgba(0,0,0,0.3)" }}>
+              {sections.map(s => (
+                <button key={s.id} onClick={() => { setActive(s.id); setOpen(false); }} style={{ display: "block", width: "100%", textAlign: "left", padding: "11px 20px", border: "none", background: active === s.id ? "#0e7c7b" : "transparent", color: "#fff", fontSize: "0.85em", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function App() {
+      const [active, setActive] = useState("activation");
+      const [menuOpen, setMenuOpen] = useState(false);
+
+      return (
+        <div style={{ fontFamily: "'IBM Plex Sans', system-ui, sans-serif", color: "#2c3e50", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+          <div style={{ background: "linear-gradient(135deg, #1a2744 0%, #2c4a7c 100%)", color: "#fff", padding: "18px 24px", position: "relative", zIndex: 10 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <h1 style={{ fontSize: "1.35em", fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>Acute Stroke Management Guide</h1>
+                <p style={{ fontSize: "0.78em", opacity: 0.75, margin: "3px 0 0 0", letterSpacing: "0.03em", textTransform: "uppercase" }}>Telestroke Quick Reference — IV TNK • Extended Window • EVT</p>
+              </div>
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <span style={{ background: "rgba(14,124,123,0.4)", border: "1px solid rgba(14,124,123,0.6)", color: "#7eecea", padding: "3px 10px", borderRadius: 20, fontSize: "0.72em", fontWeight: 600, fontFamily: "'IBM Plex Mono', monospace" }}>AHA 2026</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+            {/* Sidebar */}
+            <div style={{ width: 210, minWidth: 210, background: "#ffffff", borderRight: "1px solid #dee2e6", overflowY: "auto", flexShrink: 0 }}>
+              <div style={{ padding: "10px 0" }}>
+                {sections.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => setActive(s.id)}
+                    style={{
+                      display: "block", width: "100%", textAlign: "left",
+                      padding: "9px 16px", border: "none",
+                      background: active === s.id ? "#f0f6fc" : "transparent",
+                      color: active === s.id ? "#1a2744" : "#555",
+                      fontSize: "0.82em", fontWeight: active === s.id ? 700 : 400,
+                      cursor: "pointer",
+                      borderLeft: active === s.id ? "3px solid #0e7c7b" : "3px solid transparent",
+                      transition: "all 0.15s",
+                      fontFamily: "'IBM Plex Sans', sans-serif",
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Main content */}
+            <div style={{ flex: 1, overflowY: "auto", padding: "24px 30px" }}>
+              <Content active={active} />
+              <div style={{ marginTop: 36, paddingTop: 14, borderTop: "1px solid #dee2e6", fontSize: "0.74em", color: "#999", lineHeight: 1.6 }}>
+                Educational reference only. Based on AHA/ASA 2026 Guidelines, OPTION, TRACE-III, HOPE, and large-core EVT RCTs. March 2026.
+              </div>
+            </div>
+          </div>
+
+          <style>{`
+            @media (max-width: 640px) {
+              .sidebar { display: none !important; }
+              .mobile-nav { display: block !important; }
+            }
+          `}</style>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
