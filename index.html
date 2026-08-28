@@ -53,7 +53,8 @@ tr:nth-child(even){background:#f8f9fa}
 </div>
 <div class="layout">
 <div class="sidebar" id="sb">
-<button class="active" data-t="s1">Code Stroke Activation</button>
+<button class="active" data-t="s0">&#9889; Guided Pathway</button>
+<button data-t="s1">Code Stroke Activation</button>
 <button data-t="s2">FANG-D Score</button>
 <button data-t="s3">Imaging Protocol</button>
 <button data-t="s4">IV TNK ≤4.5h + Benefits&gt;Risks</button>
@@ -70,7 +71,17 @@ tr:nth-child(even){background:#f8f9fa}
 </div>
 <div class="content">
 
-<div class="section active" id="s1">
+<div class="section active" id="s0">
+<h2>Suspected Acute Stroke — Guided Pathway</h2>
+<p>The Epic <i>Suspected Acute Stroke SE</i> pathway, rebuilt so you answer one question at a time and only see the branches your patient is actually on. Enter last known well and the screens; it works out Code Stroke vs non-emergent, the imaging order, and the thrombolytic and thrombectomy assessments, and produces a summary for the note.</p>
+<div class="alert ab"><div class="at">Prototype for discussion</div>Clinical content is transcribed from the current Epic pathway. Purple items are Epic-native links that would need wiring if adopted; blue items are reference content that can live in the app; green items are documented in the app (NIHSS, mRS). Not a validated clinical decision tool.</div>
+<div style="border:1px solid #dee2e6;border-radius:8px;overflow:hidden;background:#f4f6fa">
+<iframe src="guided-pathway.html" title="Suspected Acute Stroke — Guided Pathway" style="width:100%;height:78vh;min-height:560px;border:0;display:block"></iframe>
+</div>
+<p style="margin-top:10px;font-size:.85em;color:#6c757d">Not displaying? <a href="guided-pathway.html" target="_blank" rel="noopener">Open the pathway in a new tab</a>.</p>
+</div>
+
+<div class="section" id="s1">
 <h2>Code Stroke Activation Criteria</h2>
 <h3>LKW ≤ 4.5 Hours</h3>
 <p>Activate code stroke if NOT suspected peripheral etiology and any of:</p>
@@ -117,6 +128,17 @@ tr:nth-child(even){background:#f8f9fa}
 <tr><td><b>4.5–24 hours</b></td><td>FANG-D <b>Negative</b></td><td>Non-emergent (CT head W/O ± CTA H&amp;N). No CTP.</td></tr>
 <tr><td><b>&gt;24 hours</b></td><td>Any</td><td>Non-emergent brain imaging. No CTP role.</td></tr></table>
 <div class="alert aa"><div class="at">Tip</div>If ordering CTA chest dissection protocol, also recommend CTA head and neck.</div>
+
+<h3>Perfusion Triggers — Reconciled with the Code Stroke Pathway</h3>
+<p>The table above keys imaging off FANG-D alone. The <b>Suspected Acute Stroke</b> pathway triggers perfusion imaging on a wider set, because each identifies a possible thrombectomy candidate:</p>
+<div class="cl"><ul>
+<li><b>LVO screen (FANG-D) positive</b> — field cut, aphasia, neglect, gaze preference, dense limb weakness</li>
+<li><b>BAO screen positive</b> — sudden, unexplained comatose-like state</li>
+<li><b>Disabling symptoms</b> — deficits that would prevent return to baseline work or ADLs</li>
+</ul></div>
+<p>Any one of these puts the patient in the <b>CT Code Stroke WITH Perfusion</b> row (NCCT + CTA H&amp;N + CTP) for both the &lt;4.5 hour and 4.5–24 hour windows — <i>if CTP is available at your site</i>.</p>
+<div class="alert ab"><div class="at">LKW Unknown</div>Treated as the <b>4.5–24 hour</b> row. An unknown-LKW patient with any perfusion trigger still gets CTP; with none, imaging is non-emergent.</div>
+<div class="alert ag"><div class="at">Let the pathway work this out</div>The <b>Guided Pathway</b> tab computes the imaging order from the LKW and screens you enter, states which row it matched, and says which trigger fired — no cross-referencing mid-code.</div>
 </div>
 
 <div class="section" id="s4">

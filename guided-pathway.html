@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Suspected Acute Stroke — Guided Pathway</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--navy:#1a2744;--navy2:#2c4a7c;--teal:#0e7c7b;--teal-lt:#64d8d8;
+--epic:#7c3aed;--epic-bg:#f5f0ff;--ref:#1d4ed8;--ref-bg:#eff5ff;
+--doc:#0e7c7b;--doc-bg:#eefaf9;--dispo:#d97706;--dispo-bg:#fff8ed;
+--red:#c0392b;--red-bg:#fdf2f2;--green:#1e8449;--green-bg:#f0faf4;
+--ink:#22303f;--mute:#6b7a8c;--line:#e2e7ee;--bg:#f4f6fa;--card:#fff;
+}
+html,body{height:100%}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
+#app{max-width:760px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;background:var(--bg)}
+.topbar{position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(26,39,68,.18)}
+.hdr{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:12px 16px}
+.hdr-row{display:flex;align-items:center;gap:10px}
+.hdr h1{font-size:.95em;font-weight:700;letter-spacing:.2px;flex:1;line-height:1.25}
+.hdr h1 small{display:block;font-weight:400;opacity:.7;font-size:.8em;letter-spacing:0}
+.clockchip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:5px 11px;font-size:.7em;font-weight:700;white-space:nowrap;text-align:center;line-height:1.25}
+.clockchip b{display:block;font-size:1.3em;color:var(--teal-lt)}
+.clockchip.warn{background:rgba(217,119,6,.35);border-color:#f0b357}
+.clockchip.warn b{color:#ffd08a}
+.clockchip.crit{background:rgba(192,57,43,.45);border-color:#ff8b7d}
+.clockchip.crit b{color:#ffc0b8}
+.btn-restart{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:6px;padding:6px 9px;font-size:.72em;cursor:pointer;font-family:inherit}
+.strip{display:flex;gap:6px;overflow-x:auto;padding:9px 12px;background:#fff;border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.strip::-webkit-scrollbar{display:none}
+.strip:empty{display:none;padding:0;border:none}
+.chip{flex:0 0 auto;background:#f1f4f9;border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:.73em;cursor:pointer;font-family:inherit;color:var(--ink);text-align:left;line-height:1.3;transition:.12s}
+.chip:hover{background:#e6ecf6;border-color:#c3cfe0}
+.chip span{display:block;font-size:.82em;color:var(--mute);text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+.chip b{font-weight:700}
+.chip.pos b{color:var(--red)}.chip.neg b{color:var(--green)}
+main{flex:1;padding:14px 12px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(26,39,68,.05)}
+.eyebrow{font-size:.68em;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:var(--mute);margin-bottom:5px}
+.q{font-size:1.2em;font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:3px}
+.sub{color:var(--mute);font-size:.85em;margin-bottom:13px}
+.card p{font-size:.9em;margin-bottom:9px}
+.card p:last-child{margin-bottom:0}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:13px 14px;font-size:.94em;font-family:inherit;color:var(--ink);cursor:pointer;transition:.12s;font-weight:600}
+.opt:hover{border-color:var(--navy2);background:#f7f9fd}
+.opt .ic{width:30px;height:30px;flex:0 0 30px;border-radius:8px;display:grid;place-items:center;font-size:.85em;font-weight:800;background:#eef2f8;color:var(--navy)}
+.opt small{display:block;font-weight:400;font-size:.78em;color:var(--mute);margin-top:1px;line-height:1.35}
+.opt.sel{border-color:var(--navy);background:#f0f4fb;box-shadow:inset 0 0 0 1px var(--navy)}
+.opt.pos .ic{background:var(--red-bg);color:var(--red)}
+.opt.neg .ic{background:var(--green-bg);color:var(--green)}
+.opt.unc .ic{background:#fff5e6;color:var(--dispo)}
+.opt.pos.sel{border-color:var(--red);background:var(--red-bg);box-shadow:inset 0 0 0 1px var(--red)}
+.opt.neg.sel{border-color:var(--green);background:var(--green-bg);box-shadow:inset 0 0 0 1px var(--green)}
+.opt.unc.sel{border-color:var(--dispo);background:var(--dispo-bg);box-shadow:inset 0 0 0 1px var(--dispo)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.row3 .opt,.row2 .opt{justify-content:center;text-align:center;padding:12px 6px;font-size:.88em}
+.row3 .opt .ic,.row2 .opt .ic{display:none}
+.lk{display:inline-flex;align-items:center;gap:6px;border:1px solid;border-radius:7px;padding:5px 10px;font-size:.83em;font-weight:600;cursor:pointer;font-family:inherit;margin:3px 5px 3px 0;text-align:left;line-height:1.3}
+.lk::before{content:'';width:7px;height:7px;border-radius:50%;flex:0 0 7px}
+.lk-epic{color:var(--epic);background:var(--epic-bg);border-color:#d9c8ff}
+.lk-epic::before{background:var(--epic)}
+.lk-ref{color:var(--ref);background:var(--ref-bg);border-color:#c3d8fb}
+.lk-ref::before{background:var(--ref)}
+.lk-doc{color:var(--doc);background:var(--doc-bg);border-color:#b9e2e0}
+.lk-doc::before{background:var(--doc)}
+.lk:hover{filter:brightness(.95)}
+.verdict{border-radius:12px;padding:18px 16px;margin-bottom:12px;border:2px solid;text-align:center}
+.verdict .vt{font-size:.68em;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;opacity:.75}
+.verdict .vh{font-size:1.5em;font-weight:800;margin:3px 0 6px;line-height:1.15}
+.verdict .vw{font-size:.86em;line-height:1.45}
+.v-code{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.v-ne{background:#fffbeb;border-color:#d9a406;color:#8a6100}
+.v-out{background:var(--dispo-bg);border-color:var(--dispo);color:#9a5b06}
+.v-ok{background:var(--green-bg);border-color:var(--green);color:#166534}
+.note{background:#f7f9fc;border-left:3px solid var(--navy2);border-radius:0 7px 7px 0;padding:10px 12px;font-size:.84em;margin:10px 0;color:#3d4d60}
+.note.chg{background:var(--dispo-bg);border-left-color:var(--dispo);color:#8a5406;font-weight:600}
+.note.crit{background:var(--red-bg);border-left-color:var(--red);color:#8c2b20;font-weight:600}
+.lbl{font-size:.72em;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--mute);margin:15px 0 6px}
+ul.tight{padding-left:19px;font-size:.88em}
+ul.tight li{margin:4px 0}
+input[type=text],input[type=time],input[type=date],input[type=number]{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:9px;font-size:1em;font-family:inherit;color:var(--ink);background:#fff}
+input:focus{outline:none;border-color:var(--navy2)}
+.chk{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border:1.5px solid var(--line);border-radius:9px;cursor:pointer;font-size:.88em;margin-bottom:7px;background:#fff;transition:.12s}
+.chk:hover{background:#f7f9fd}
+.chk input{margin-top:2px;accent-color:var(--teal);width:17px;height:17px;flex:0 0 17px}
+.chk.on{border-color:var(--teal);background:var(--doc-bg)}
+.tz{flex:0 0 auto;background:#eef2f8;border:1.5px solid var(--line);border-radius:9px;padding:11px 12px;font-size:.85em;font-weight:700;color:#42546b;letter-spacing:.5px}
+.nav{display:flex;gap:8px;margin-top:14px}
+.btn{flex:1;padding:13px;border-radius:10px;border:none;font-size:.95em;font-weight:700;font-family:inherit;cursor:pointer;transition:.12s}
+.btn-p{background:var(--navy);color:#fff}.btn-p:hover{background:var(--navy2)}
+.btn-p:disabled{background:#c3cbd8;cursor:not-allowed}
+.btn-s{background:#fff;border:1.5px solid var(--line);color:var(--mute);flex:0 0 auto;padding:13px 18px}
+.btn-s:hover{background:#f1f4f9;color:var(--ink)}
+table.t{width:100%;border-collapse:collapse;font-size:.82em;margin:8px 0}
+table.t th{background:var(--navy);color:#fff;padding:8px 9px;text-align:left;font-weight:600}
+table.t td{padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t tr.hit td{background:var(--red-bg);font-weight:700}
+.mask{position:fixed;inset:0;background:rgba(20,28,42,.55);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.mask.on{display:flex}
+.sheet{background:#fff;width:100%;max-width:760px;max-height:92vh;overflow-y:auto;border-radius:16px 16px 0 0;padding:18px 16px calc(24px + env(safe-area-inset-bottom))}
+.sheet h3{font-size:1.1em;color:var(--navy);margin-bottom:4px}
+.sheet .sh-sub{font-size:.83em;color:var(--mute);margin-bottom:12px}
+@media(min-width:600px){.mask{align-items:center}.sheet{border-radius:16px;max-height:86vh}}
+.ntot{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:10px;padding:13px 15px;display:flex;align-items:center;gap:16px;margin-bottom:12px;position:sticky;top:-18px;z-index:5}
+.ntot .n{font-size:2.3em;font-weight:800;color:var(--teal-lt);line-height:1}
+.ntot .sv{padding:4px 12px;border-radius:999px;font-weight:700;font-size:.78em}
+.ni{border:1px solid var(--line);border-radius:9px;margin-bottom:8px;overflow:hidden}
+.nih{background:#f4f6fa;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;font-size:.85em;font-weight:700;cursor:pointer;gap:8px;color:var(--navy)}
+.nib{background:var(--teal);color:#fff;border-radius:5px;padding:1px 9px;font-size:.9em;min-width:26px;text-align:center}
+.nib.hi{background:var(--red)}
+.nio{padding:6px 10px;background:#fff;border-top:1px solid var(--line)}
+.nio.hide{display:none}
+.nio label{display:flex;gap:9px;padding:7px 6px;border-radius:6px;cursor:pointer;font-size:.83em;align-items:flex-start}
+.nio label:hover{background:#f2f6fc}
+.nio input{accent-color:var(--teal);margin-top:2px;flex:0 0 auto}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.footer{text-align:center;font-size:.72em;color:var(--mute);padding:4px 12px 22px;line-height:1.5}
+.sumbox{background:#f7f9fc;border:1px solid var(--line);border-radius:9px;padding:12px;font-size:.82em;white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;line-height:1.55;max-height:340px;overflow:auto}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+  <div class="hdr">
+    <div class="hdr-row">
+      <h1>Suspected Acute Stroke<small>Guided pathway — prototype</small></h1>
+      <div class="clockchip" id="clk" style="display:none"></div>
+      <button class="btn-restart" onclick="restart()">&#8635; New</button>
+    </div>
+  </div>
+  <div class="strip" id="strip"></div>
+  </div>
+  <main id="main"></main>
+  <div class="footer">Prototype for pathway-design discussion. Not a validated clinical decision tool. Content transcribed from the existing Epic <i>Suspected Acute Stroke SE</i> pathway.</div>
+</div>
+<div class="mask" id="mask" onclick="if(event.target===this)closeSheet()"><div class="sheet" id="sheet"></div></div>
+<script>
+/* ============ STATE ============ */
+var S, hist, step, ticker;
+function blank(){return{
+ lkwMode:null,lkwDate:'',lkwTime:'',lkwTimeRaw:'',lkwUnknown:false,
+ befast:null,lvo:null,bao:null,disabling:null,resolved:false,otherCause:false,
+ weight:'',glucose:'',nihss:null,nihssFinal:null,nihssScores:{},
+ mrs:null,ct:null,mimic:false,cxReviewed:false,discPt:false,discTeam:false,
+ lyticsGiven:false,mtDone:false,extGiven:false,dispo:null,lastVerdict:null,changeNote:null
+};}
+function restart(){if(step&&step!=='intro'&&!confirm('Start a new patient? Current entries are cleared.'))return;S=blank();hist=[];step='intro';render();}
+
+/* ============ LKW MATH ============ */
+function lkwDT(){
+ if(S.lkwUnknown||!S.lkwDate||!S.lkwTime)return null;
+ var d=new Date(S.lkwDate+'T'+S.lkwTime);return isNaN(d)?null:d;
+}
+function lkw(){
+ if(S.lkwUnknown)return{set:true,unknown:true,bucket:'unknown',label:'Unknown',hours:null};
+ var d=lkwDT();
+ if(!d)return{set:false,unknown:false,bucket:null,label:'Not set',hours:null};
+ var h=(Date.now()-d.getTime())/3600000;
+ var b=h<0?'future':h<4.5?'lt45':h<24?'mid':'over24';
+ return{set:true,unknown:false,bucket:b,hours:h,date:d,
+  label:h<0?'in the future':fmtH(h)+' ago',
+  remain:4.5-h};
+}
+function fmtH(h){var m=Math.round(h*60);return (m<60)?m+' min':Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m';}
+function bucketName(b){return{lt45:'< 4.5 hours',mid:'4.5 – 24 hours',over24:'> 24 hours',unknown:'Unknown',future:'invalid'}[b]||'—';}
+
+function tick(){
+ var c=document.getElementById('clk'),L=lkw();
+ if(!L.set||step==='intro'){c.style.display='none';return;}
+ c.style.display='';c.className='clockchip';
+ if(L.unknown){c.innerHTML='LKW<b>Unknown</b>';c.classList.add('warn');return;}
+ if(L.bucket==='over24'){c.innerHTML='SINCE LKW<b>'+Math.floor(L.hours)+'h</b>';c.classList.add('warn');return;}
+ if(L.bucket==='future'){c.innerHTML='LKW<b>future</b>';c.classList.add('crit');return;}
+ if(L.remain>0){
+  c.innerHTML='LEFT IN 4.5h WINDOW<b>'+fmtH(L.remain)+'</b>';
+  if(L.remain<1)c.classList.add('crit');else if(L.remain<2)c.classList.add('warn');
+ }else{
+  c.innerHTML='PAST 4.5h BY<b>'+fmtH(-L.remain)+'</b>';c.classList.add('warn');
+ }
+}
+
+/* ============ ROUTING ============ */
+function route(){
+ var L=lkw();
+ if(S.otherCause)return'OUT';
+ if(S.resolved)return'NE';
+ if(L.bucket==='over24')return'NE';
+ var anyPos=S.befast==='pos'||S.lvo==='pos'||S.bao==='pos';
+ var gaps=(S.lvo===null||S.bao===null||S.disabling===null);
+ if(L.bucket==='lt45'){
+  if(anyPos||S.disabling===true)return'CODE';
+  if(gaps)return'INCOMPLETE';
+  return'OUT';
+ }
+ if(S.lvo==='pos'||S.bao==='pos'||S.disabling===true)return'CODE';
+ if(gaps)return'INCOMPLETE';
+ if(!anyPos)return'OUT';
+ return'NE';
+}
+function ctaOrder(){return S.lvo==='pos'||S.bao==='pos'||S.disabling;}
+
+/* ============ NAV ============ */
+function go(n){if(step!==n){hist.push(step);step=n;}render();window.scrollTo(0,0);}
+function back(){if(hist.length){step=hist.pop();render();window.scrollTo(0,0);}}
+function jump(n){ /* edit an earlier answer, remembering where we were */
+ if(step!==n){hist.push(step);step=n;}
+ S.lastVerdict=S.lastVerdict; render();window.scrollTo(0,0);
+}
+function set(k,v,next){S[k]=v;if(next)go(next);else render();}
+
+/* ============ PATIENT STRIP ============ */
+function strip(){
+ if(step==='intro')return'';
+ var L=lkw(),h='';
+ function chip(lbl,val,cls,tgt){return '<button class="chip '+(cls||'')+'" onclick="jump(\''+tgt+'\')"><span>'+lbl+'</span><b>'+val+'</b></button>';}
+ if(L.set)h+=chip('LKW',L.unknown?'Unknown':bucketName(L.bucket),L.bucket==='lt45'?'pos':'','lkw');
+ if(S.befast)h+=chip('BE-FAST',{pos:'POS',neg:'NEG',uncertain:'Uncertain'}[S.befast],S.befast==='pos'?'pos':S.befast==='neg'?'neg':'','screen');
+ if(S.lvo)h+=chip('LVO / FANG-D',S.lvo==='pos'?'POS':'NEG',S.lvo==='pos'?'pos':'neg','screen');
+ if(S.bao)h+=chip('BAO',S.bao==='pos'?'POS':'NEG',S.bao==='pos'?'pos':'neg','screen');
+ if(S.disabling!==null)h+=chip('Disabling sx',S.disabling?'Yes':'No',S.disabling?'pos':'neg','screen');
+ if(S.nihss!==null)h+=chip('NIHSS',String(S.nihss),S.nihss>=6?'pos':'','manage');
+ if(S.mrs!==null)h+=chip('Pre-stroke mRS',String(S.mrs),S.mrs>=3?'pos':'neg','manage');
+ if(S.ct)h+=chip('CT',{ischemic:'Ischemic / unremarkable',hemorrhagic:'Hemorrhagic'}[S.ct],S.ct==='hemorrhagic'?'pos':'','ct');
+ return h;
+}
+/* ============ SHEETS / REFERENCE CONTENT ============ */
+function openSheet(html){document.getElementById('sheet').innerHTML=html+'<div class="nav"><button class="btn btn-p" onclick="closeSheet()">Close</button></div>';document.getElementById('mask').classList.add('on');}
+function closeSheet(){document.getElementById('mask').classList.remove('on');render();}
+function epic(name){openSheet('<h3 style="color:var(--epic)">'+name+'</h3><div class="sh-sub">Epic-native item</div>'+
+ '<div class="note">In Epic this link opens <b>'+name+'</b> directly. This prototype cannot open Epic, so the item is flagged purple: <b>if this pathway is adopted, this is one of the links the build team needs to wire.</b></div>');}
+
+var REF={
+ befast:['BE-FAST screen','<ul class="tight"><li><b>B</b> — Loss of <b>B</b>alance</li><li><b>E</b> — <b>E</b>ye / vision changes</li><li><b>F</b> — <b>F</b>ace drooping</li><li><b>A</b> — <b>A</b>rm weakness</li><li><b>S</b> — <b>S</b>peech difficulty</li><li><b>T</b> — <b>T</b>hunderclap headache</li></ul><div class="note">Screen is <b>positive</b> if any element is present and not explained by an obvious non-stroke cause.</div>'],
+ fangd:['LVO screen — FANG-D','<ul class="tight"><li><b>F</b> — <b>F</b>ield cut, visual</li><li><b>A</b> — <b>A</b>phasia</li><li><b>N</b> — <b>N</b>eglect</li><li><b>G</b> — <b>G</b>aze preference</li><li><b>D</b> — <b>D</b>ense limb weakness</li></ul>'],
+ bao:['BAO screen','<ul class="tight"><li>Sudden, unexplained comatose-like state</li></ul>'],
+ disabling:['Disabling symptoms','<p>Deficits that would prevent the patient returning to their baseline work or activities of daily living if they did not resolve — e.g. dense hemiparesis, aphasia, hemianopia, gaze deviation, severe dysarthria, ataxia limiting ambulation.</p><div class="note">This determines Code Stroke activation in the <b>4.5 – 24 hour</b> window, and is one of the criteria for extended-window thrombolytics.</div>'],
+ narrator:['Stroke Narrator','<p>Nursing documentation activity for a Code Stroke — captures the timeline, serial neuro assessments and time stamps used for stroke-centre metrics.</p><div class="note">Epic-native activity. Blue here because the equivalent could also live in-app; confirm with the Epic team which side it belongs on.</div>'],
+ cx:['Relative and absolute contraindications to thrombolytics','<div class="lbl">Absolute</div><ul class="tight"><li>CT with extensive hypodensity responsible for symptoms</li><li>CT with acute intracranial hemorrhage</li><li>Moderate–severe TBI &lt; 14 days</li><li>Intracranial / spinal neurosurgery &lt; 14 days</li><li>Acute spinal cord injury &lt; 3 months</li><li>Intra-axial intracranial neoplasm</li><li>Active infective endocarditis</li><li>Severe coagulopathy / thrombocytopenia (PLT &lt; 100K, INR &gt; 1.7, aPTT &gt; 40s, PT &gt; 15s)</li><li>Known or suspected aortic arch dissection</li><li>Amyloid-related imaging abnormalities (ARIA) / amyloid immunotherapy</li></ul><div class="lbl">Relative — individualised risk / benefit</div><ul class="tight"><li>Pre-existing disability or frailty</li><li>DOAC exposure &lt; 48 h</li><li>Ischemic stroke &lt; 3 months; prior ICH</li><li>Major non-CNS trauma 14 d – 3 mo; major non-CNS surgery &lt; 10 d</li><li>GI / GU bleeding &lt; 21 days</li><li>Intracranial arterial dissection or vascular malformation</li><li>STEMI &lt; 3 months; acute pericarditis; LA / LV thrombus</li><li>Systemic active malignancy</li><li>Pregnancy and post-partum</li><li>Dural puncture &lt; 7 d; arterial puncture at noncompressible site &lt; 7 d</li></ul><div class="note"><b>Key principle:</b> weigh the severity and disability of the presenting stroke against bleeding risk. For severe, clearly disabling deficits, IVT benefit generally outweighs risk. Consult stroke neurology.</div><div class="note">Full detail lives in the Acute Stroke Management Guide → <i>TNK Contraindications</i>.</div>'],
+ ext:['Extended window imaging and thrombolytic criteria','<ul class="tight"><li>LKW <b>4.5 – 24 hours</b></li><li><b>ONLY</b> in consultation with Neurology</li><li><b>ONLY</b> if thrombolytics were <b>not already given</b></li><li><b>ONLY</b> if mechanical thrombectomy was <b>not performed</b></li><li>NIHSS &ge; 6 and/or disabling symptoms</li><li>Perfusion / advanced imaging supporting salvageable tissue</li><li>Recommended by Neurology</li></ul><div class="note">Trial-level detail (OPTION, HOPE / TRACE) is in the Acute Stroke Management Guide → <i>Extended TNK</i> sections.</div>'],
+ nihss6:['NIHSS 6 and/or disabling symptoms','<p>One of the entry criteria for extended-window thrombolytics: NIHSS &ge; 6, <i>or</i> a deficit that is clearly disabling regardless of the numeric score.</p><div class="note">Current documented NIHSS: <b>'+'</b></div>'],
+ mt:['Mechanical thrombectomy criteria','<ul class="tight"><li>Anterior circulation LVO: <b>ICA or proximal MCA</b></li><li>By LKW: <b>&lt; 6 h</b> ideal · <b>&lt; 16 h</b> reasonable · <b>&lt; 24 h</b> <i>and</i> perfusion mismatch on CT</li></ul>'],
+ why:['Why use this pathway?','<table class="t"><tr><th>Pages</th><th>Inclusion criteria</th></tr><tr><td>Screen<br>Manage</td><td>Stroke-like symptoms<br>Age &ge; 18 years<br>Last known well &lt; 24 hours</td></tr></table><div class="note">CT time goals: <b>initiated &le; 20 min</b>, <b>interpreted &le; 35 min</b>.</div>'],
+
+ imaging:['Imaging protocol by time window &amp; FANG-D','<table class="t"><tr><th>Time from LKW</th><th>FANG-D</th><th>Imaging order</th></tr>'+
+  '<tr><td>&lt; 4.5 h</td><td>Negative</td><td>CT Code Stroke Head W/O only. In select cases, may add CTA H&amp;N</td></tr>'+
+  '<tr><td>&lt; 4.5 h</td><td>Positive</td><td><b>CT Code Stroke WITH Perfusion</b> (NCCT + CTA H&amp;N + CTP)</td></tr>'+
+  '<tr><td>4.5 &ndash; 24 h</td><td>Positive</td><td><b>CT Code Stroke WITH Perfusion</b> (NCCT + CTA H&amp;N + CTP)</td></tr>'+
+  '<tr><td>4.5 &ndash; 24 h</td><td>Negative</td><td>Non-emergent (CT head W/O &plusmn; CTA H&amp;N). No CTP.</td></tr>'+
+  '<tr><td>&gt; 24 h</td><td>Any</td><td>Non-emergent brain imaging. No CTP role.</td></tr></table>'+
+  '<div class="note"><b>Tip</b> &mdash; if ordering a CTA chest dissection protocol, also recommend CTA head and neck.</div>'+
+  '<div class="note">A positive <b>BAO</b> screen or <b>disabling symptoms</b> trigger perfusion imaging on the same basis as a positive LVO screen, per the Code Stroke pathway.</div>'+
+  '<div class="note">Source: Acute Stroke Management Guide &rarr; <i>Imaging Protocol</i>.</div>'],
+ mrs:['Modified Rankin Scale (mRS) — pre-stroke baseline','<p>The patient&rsquo;s level of function <b>before this stroke</b>. Pre-stroke mRS is critical for thrombectomy eligibility.</p><table class="t"><tr><th>Score</th><th>Grade</th><th>Description</th></tr><tr><td><b>0</b></td><td>No symptoms</td><td>Completely asymptomatic</td></tr><tr><td><b>1</b></td><td>No significant disability</td><td>Symptoms but carries out all usual duties and activities</td></tr><tr><td><b>2</b></td><td>Slight disability</td><td>Unable to carry out all previous activities but independent in own affairs</td></tr><tr><td><b>3</b></td><td>Moderate disability</td><td>Requires some help, but walks without assistance</td></tr><tr><td><b>4</b></td><td>Moderately severe</td><td>Unable to walk unassisted; cannot attend to own bodily needs</td></tr><tr><td><b>5</b></td><td>Severe disability</td><td>Bedridden, incontinent, constant nursing care</td></tr></table><div class="lbl">Thrombectomy eligibility (pre-stroke)</div><ul class="tight"><li><b>mRS 0&ndash;2</b> &mdash; standard eligibility for most EVT windows</li><li><b>mRS 3&ndash;4</b> &mdash; individualised basis if radiographic criteria met</li><li><b>mRS 5</b> &mdash; generally not a candidate</li></ul><div class="note">Full detail in the Acute Stroke Management Guide &rarr; <i>mRS Guide</i>.</div>'],
+ mimic:['Common stroke mimics','<ul class="tight"><li><b>Hypoglycemia</b> or hyperglycemia</li><li>Seizure with post-ictal (Todd&rsquo;s) paralysis</li><li>Complicated migraine</li><li>Toxic / metabolic encephalopathy, including sepsis and drug effect</li><li>Peripheral nerve or root lesion (e.g. Bell&rsquo;s palsy, radiculopathy)</li><li>Functional neurological disorder</li><li>Recrudescence of an old deficit with an intercurrent illness</li></ul><div class="note">Check the glucose first. This is a clinical determination from the whole presentation &mdash; a normal CT on its own neither makes nor excludes it.</div>'],
+ centers:['Transfer — stroke centres','<p>Primary &amp; Comprehensive Stroke Centers, NC + GA.</p><div class="note">In Epic this opens the maintained centre list with contact numbers. Purple item for the build team.</div>']
+};
+function ref(k){var r=REF[k];var b=r[1];if(k==='nihss6')b=b.replace('<b></b>','<b>'+(S.nihss!==null?S.nihss:'not yet documented')+'</b>');
+ openSheet('<h3 style="color:var(--ref)">'+r[0]+'</h3><div class="sh-sub">Reference — lives inside the app</div>'+b);}
+function E(n){return '<button class="lk lk-epic" onclick="epic(\''+n.replace(/'/g,"\\'")+'\')">'+n+'</button>';}
+function R(k,label){return '<button class="lk lk-ref" onclick="ref(\''+k+'\')">'+label+'</button>';}
+
+/* ============ NIHSS ============ */
+var NI=[
+['1a','Level of Consciousness',['Alert; keenly responsive','Not alert; arousable by minor stimulation to obey, answer or respond','Not alert; requires repeated or painful stimulation to make movements','Responds only with reflex motor or autonomic effects, or totally unresponsive']],
+['1b','LOC Questions (month / age)',['Answers both correctly','Answers one correctly','Answers neither correctly']],
+['1c','LOC Commands (blink / grip)',['Performs both tasks correctly','Performs one task correctly','Performs neither task correctly']],
+['2','Best Gaze',['Normal','Partial gaze palsy','Forced deviation or total gaze paresis not overcome by oculocephalic maneuver']],
+['3','Visual Fields',['No visual loss','Partial hemianopia','Complete hemianopia','Bilateral hemianopia (blind, including cortical blindness)']],
+['4','Facial Palsy',['Normal symmetrical movements','Minor paralysis (flattened NLF, asymmetry on smiling)','Partial paralysis (total or near-total paralysis of lower face)','Complete paralysis of one or both sides (upper and lower face)']],
+['5a','Motor Arm — Left',['No drift; holds 90&deg; (or 45&deg;) for 10 seconds','Drift; holds but drifts before 10 seconds, does not hit support','Some effort against gravity; cannot get to or maintain 90&deg;','No effort against gravity; arm falls','No movement']],
+['5b','Motor Arm — Right',['No drift; holds 90&deg; (or 45&deg;) for 10 seconds','Drift; holds but drifts before 10 seconds','Some effort against gravity; drifts to bed but has some effort','No effort against gravity; arm falls','No movement']],
+['6a','Motor Leg — Left',['No drift; holds 30&deg; for 5 seconds','Drift; leg falls by 5 seconds but does not hit bed','Some effort against gravity; falls to bed by 5 seconds','No effort against gravity; falls immediately','No movement']],
+['6b','Motor Leg — Right',['No drift; holds 30&deg; for 5 seconds','Drift; leg falls by 5 seconds but does not hit bed','Some effort against gravity; falls to bed by 5 seconds','No effort against gravity; falls immediately','No movement']],
+['7','Limb Ataxia',['Absent','Present in one limb','Present in two limbs']],
+['8','Sensory',['Normal; no sensory loss','Mild-to-moderate sensory loss','Severe to total sensory loss']],
+['9','Best Language',['No aphasia; normal','Mild-to-moderate aphasia','Severe aphasia; fragmentary expression','Mute, global aphasia; no usable speech or auditory comprehension']],
+['10','Dysarthria',['Normal','Mild-to-moderate; slurs at least some words','Severe; speech unintelligible']],
+['11','Extinction &amp; Inattention (Neglect)',['No abnormality','Inattention or extinction in one sensory modality','Profound hemi-inattention or extinction to more than one modality']]
+];
+var nTmp={},nFinalMode=false;
+function nihssOpen(final){
+ nFinalMode=!!final;nTmp={};var src=final?(S.nihssFinalScores||{}):S.nihssScores;
+ NI.forEach(function(i){nTmp[i[0]]=src[i[0]]||0;});
+ var h='<h3 style="color:var(--doc)">Document NIHSS'+(final?' — final, at dispo':'')+'</h3><div class="sh-sub">Scored in-app. The total drops straight into the Review row and the patient strip.</div>';
+ h+='<div class="ntot"><div><div style="font-size:.7em;opacity:.8">TOTAL</div><div class="n" id="ntot">0</div></div><div><div style="font-size:.7em;opacity:.8;margin-bottom:3px">Severity</div><div class="sv" id="nsev"></div></div></div><div id="nlist"></div>';
+ h+='<div class="nav"><button class="btn btn-s" onclick="closeSheet()">Cancel</button><button class="btn btn-p" onclick="nihssSave()">Save score</button></div>';
+ document.getElementById('sheet').innerHTML=h;
+ var L='';NI.forEach(function(it,ix){
+  L+='<div class="ni"><div class="nih" onclick="nihToggle('+ix+')"><span>'+it[0]+'. '+it[1]+'</span><span class="nib" id="nb'+ix+'">0</span></div><div class="nio hide" id="no'+ix+'">';
+  it[2].forEach(function(o,v){L+='<label><input type="radio" name="ni'+ix+'" value="'+v+'" onchange="nihSet('+ix+','+v+')"'+(nTmp[it[0]]===v?' checked':'')+'><span><b>'+v+'</b> — '+o+'</span></label>';});
+  L+='</div></div>';});
+ document.getElementById('nlist').innerHTML=L;
+ nihUpd();document.getElementById('mask').classList.add('on');
+}
+function nihToggle(ix){document.getElementById('no'+ix).classList.toggle('hide');}
+function nihSet(ix,v){nTmp[NI[ix][0]]=v;nihUpd();document.getElementById('no'+ix).classList.add('hide');}
+function nihTotal(){var t=0;NI.forEach(function(i){t+=nTmp[i[0]]||0;});return t;}
+function sev(t){return t===0?['No stroke symptoms','#1e8449']:t<=4?['Minor (1–4)','#2ecc71']:t<=15?['Moderate (5–15)','#f39c12']:t<=20?['Moderate–severe (16–20)','#e67e22']:['Severe (21–42)','#c0392b'];}
+function nihUpd(){
+ var t=nihTotal();document.getElementById('ntot').textContent=t;
+ var s=sev(t),e=document.getElementById('nsev');e.textContent=s[0];e.style.background=s[1];e.style.color='#fff';
+ NI.forEach(function(i,ix){var b=document.getElementById('nb'+ix);b.textContent=nTmp[i[0]]||0;b.className='nib'+((nTmp[i[0]]||0)>0?' hi':'');});
+}
+function nihssSave(){
+ var t=nihTotal();
+ if(nFinalMode){S.nihssFinal=t;S.nihssFinalScores=JSON.parse(JSON.stringify(nTmp));}
+ else{S.nihss=t;S.nihssScores=JSON.parse(JSON.stringify(nTmp));}
+ closeSheet();
+}
+/* ============ SMALL HELPERS ============ */
+function who(t){return '<span style="display:inline-block;background:#eef2f8;color:#42546b;border-radius:5px;padding:1px 7px;font-size:.7em;font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-right:6px;vertical-align:1px">'+t+'</span>';}
+function opt(label,sub,cls,onclick,selected){
+ return '<button class="opt '+(cls||'')+(selected?' sel':'')+'" onclick="'+onclick+'">'+
+  (cls?'<span class="ic">'+(cls==='pos'?'+':cls==='neg'?'&minus;':'?')+'</span>':'')+
+  '<span>'+label+(sub?'<small>'+sub+'</small>':'')+'</span></button>';
+}
+function navBtns(nextLabel,nextFn,enabled){
+ return '<div class="nav">'+(hist.length?'<button class="btn btn-s" onclick="back()">&larr; Back</button>':'')+
+  (nextLabel?'<button class="btn btn-p" '+(enabled===false?'disabled':'onclick="'+nextFn+'"')+'>'+nextLabel+'</button>':'')+'</div>';
+}
+function shortcut(){return '<div class="card" style="border-color:#f3c6c0;background:var(--red-bg)"><div style="font-size:.85em;font-weight:700;color:var(--red);margin-bottom:6px">No time? Go straight to orders</div>'+E('Code Stroke Order Set')+
+ '<div style="font-size:.78em;color:#8c2b20;margin-top:7px"><b>CT time goals</b> &nbsp; initiated &le; 20 min &nbsp;&middot;&nbsp; interpreted &le; 35 min</div></div>';}
+
+/* ============ STEPS ============ */
+var V={};
+
+V.intro=function(){
+ return '<div class="card"><div class="eyebrow">Pathway prototype</div><div class="q">Same pathway. One question at a time.</div>'+
+ '<div class="sub">The clinical content is transcribed verbatim from the current Epic <i>Suspected Acute Stroke SE</i> pathway. Only the interface has changed.</div>'+
+ '<div class="note">The Epic version draws every branch on one canvas, for every patient. You pan and zoom to find the path that applies, across two separate tabs, and nothing you enter carries forward. This asks one question at a time and shows only the branches your patient is actually on.</div>'+
+ '<div class="lbl">What is different</div>'+
+ '<ul class="tight"><li><b>One decision per screen</b> &mdash; everything off this patient&rsquo;s path stays hidden</li>'+
+ '<li><b>Last known well in one tap</b> &mdash; Today / Yesterday / Unknown, with the 4.5 hour window counting down in the header</li>'+
+ '<li><b>One shared record</b> &mdash; ED, nursing, neurology and hospitalist all see and update the same state; no role gates</li>'+
+ '<li><b>Change anything, any time</b> &mdash; edit an earlier answer from the strip at the top and the pathway re-computes, and tells you what changed</li>'+
+ '<li><b>NIHSS and mRS scored in the app</b> &mdash; the numbers stay visible and land in the summary</li>'+
+ '<li><b>Imaging worked out for you</b> &mdash; the order, and whether CT perfusion is indicated, from the last known well and the screens</li>'+
+ '<li><b>A summary for the note</b> at the end, in one tap</li></ul>'+
+ '<div class="lbl">Colour code for clickables</div><div class="legend">'+
+ '<span class="lk lk-epic">Epic-native &mdash; needs wiring</span><span class="lk lk-ref">Reference &mdash; lives in-app</span><span class="lk lk-doc">Documented in-app</span></div>'+
+ '<div class="nav"><button class="btn btn-p" onclick="go(\'lkw\')">Start a patient &rarr;</button></div>'+
+ '<div style="text-align:center;margin-top:9px">'+R('why','Why should I use this pathway?')+'</div></div>';
+};
+
+V.lkw=function(){
+ var L=lkw(),t=new Date(),y=new Date(Date.now()-86400000);
+ function ds(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+ var td=ds(t),yd=ds(y);
+ var h='<div class="card"><div class="eyebrow">Step 1 of 3 &nbsp;&middot;&nbsp; anyone on the team</div><div class="q">Last known well</div>'+
+ '<div class="sub">When was the patient last seen at their baseline?</div>'+
+ '<div class="row3" style="margin-bottom:10px">'+
+  opt('Today','','', "setDay('"+td+"')", S.lkwDate===td&&!S.lkwUnknown)+
+  opt('Yesterday','','', "setDay('"+yd+"')", S.lkwDate===yd&&!S.lkwUnknown)+
+  opt('Unknown','','', "setUnknown()", S.lkwUnknown)+'</div>';
+ if(!S.lkwUnknown){
+  var bad=S.lkwTimeRaw&&!S.lkwTime;
+  h+='<div class="lbl">Time <span style="font-weight:400;text-transform:none;letter-spacing:0">&mdash; 24-hour clock</span></div>'+
+   '<div style="display:flex;gap:8px;align-items:center">'+
+   '<input type="text" id="lkwt" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="HH:MM" value="'+S.lkwTimeRaw+'"'+
+   (bad?' style="border-color:var(--red);background:var(--red-bg)"':'')+' oninput="timeIn(this)">'+
+   '<span class="tz">'+tzAbbr()+'</span>'+
+   '<button class="btn btn-s" style="flex:0 0 auto;padding:11px 14px" onclick="setNow()">Now</button></div>'+
+   (bad?'<div style="font-size:.78em;color:var(--red);margin-top:5px;font-weight:600">Enter a 24-hour time between 00:00 and 23:59 &mdash; e.g. 13:30 for 1:30 pm.</div>'
+       :'<div style="font-size:.76em;color:var(--mute);margin-top:5px">Type the digits &mdash; 1330 becomes 13:30.</div>');
+  h+='<div class="lbl">Or a different date</div><input type="date" value="'+S.lkwDate+'" onchange="S.lkwDate=this.value;S.lkwUnknown=false;render()">';
+ }
+ if(L.set){
+  var cls=L.bucket==='lt45'?'v-ok':L.bucket==='over24'?'v-out':'v-ne';
+  var msg=L.unknown?'Treated as the 4.5 &ndash; 24 hour window until it is established. Screens still decide activation.'
+    :L.bucket==='future'?'That time is in the future &mdash; check the date.'
+    :L.bucket==='lt45'?fmtH(L.remain)+' left in the 4.5 hour thrombolytic window.'
+    :L.bucket==='mid'?'Outside the standard lytic window. LVO, BAO or disabling symptoms still activate a Code Stroke.'
+    :'Beyond the pathway&rsquo;s 24 hour inclusion criterion &mdash; this routes to a non-emergent stroke workup.';
+  h+='<div class="verdict '+cls+'" style="margin-top:14px"><div class="vt">LKW</div><div class="vh">'+
+   (L.unknown?'Unknown':bucketName(L.bucket))+'</div><div class="vw">'+(L.unknown?'':'<b>'+L.label+'</b><br>')+msg+'</div></div>';
+ }
+ h+=navBtns('Continue &rarr;',"go('screen')",L.set&&L.bucket!=='future')+'</div>'+shortcut();
+ return h;
+};
+function tzAbbr(){
+ try{var p=new Date().toLocaleTimeString('en-US',{timeZoneName:'short'}).split(' ');
+  var a=p[p.length-1];return /^[A-Z]{2,5}$/.test(a)?a:'EDT';}catch(e){return 'EDT';}
+}
+function fmtTime(v){
+ v=v.replace(/[^0-9]/g,'').slice(0,4);
+ return v.length>2?v.slice(0,2)+':'+v.slice(2):v;
+}
+function timeIn(el){
+ var v=fmtTime(el.value);
+ S.lkwTimeRaw=v;
+ S.lkwTime=/^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(v)?v:'';
+ render();
+ var n=document.getElementById('lkwt');
+ if(n){n.focus();try{n.setSelectionRange(v.length,v.length);}catch(e){}}
+}
+function setTime(t){S.lkwTime=t;S.lkwTimeRaw=t;}
+function setDay(d){S.lkwDate=d;S.lkwUnknown=false;if(!S.lkwTime){var n=new Date();setTime(String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'));}render();}
+function setUnknown(){S.lkwUnknown=true;render();}
+function setNow(){var n=new Date();setTime(String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'));if(!S.lkwDate){S.lkwDate=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}S.lkwUnknown=false;render();}
+
+V.screen=function(){
+ var h='<div class="card"><div class="eyebrow">Step 2 of 3 &nbsp;&middot;&nbsp; nursing or clinician</div><div class="q">Screen for acute stroke</div>'+
+ '<div class="sub">Fill in what you have assessed. Anyone on the team can add to this &mdash; a nurse can start with BE-FAST and a clinician can complete the rest.</div>';
+ h+='<div class="lbl">BE-FAST '+R('befast','what to check')+'</div><div class="row3">'+
+  opt('Positive','','pos',"set('befast','pos')",S.befast==='pos')+
+  opt('Negative','','neg',"set('befast','neg')",S.befast==='neg')+
+  opt('Uncertain','','unc',"set('befast','uncertain')",S.befast==='uncertain')+'</div>';
+ h+='<div class="lbl">LVO screen &mdash; FANG-D '+R('fangd','what to check')+'</div><div class="row2">'+
+  opt('Positive','','pos',"set('lvo','pos')",S.lvo==='pos')+
+  opt('Negative','','neg',"set('lvo','neg')",S.lvo==='neg')+'</div>';
+ h+='<div class="lbl">BAO screen '+R('bao','what to check')+'</div><div class="row2">'+
+  opt('Positive','','pos',"set('bao','pos')",S.bao==='pos')+
+  opt('Negative','','neg',"set('bao','neg')",S.bao==='neg')+'</div>';
+ h+='<div class="lbl">Disabling symptoms '+R('disabling','definition')+'</div><div class="row2">'+
+  opt('Yes','','pos',"set('disabling',true)",S.disabling===true)+
+  opt('No','','neg',"set('disabling',false)",S.disabling===false)+'</div>';
+ h+='<div class="lbl">Anything that takes the patient off this pathway?</div>'+
+  '<label class="chk'+(S.resolved?' on':'')+'"><input type="checkbox" '+(S.resolved?'checked':'')+' onchange="S.resolved=this.checked;render()"><span>Symptoms have <b>resolved</b></span></label>'+
+  '<label class="chk'+(S.otherCause?' on':'')+'"><input type="checkbox" '+(S.otherCause?'checked':'')+' onchange="S.otherCause=this.checked;render()"><span>Deficit(s) explained by <b>peripheral nerve, glucose, or other obvious cause</b></span></label>';
+ h+=navBtns('See the decision &rarr;',"go('route')",!!S.befast)+'</div>'+shortcut();
+ return h;
+};
+
+V.route=function(){
+ var r=route(),L=lkw(),h='';
+ if(S.lastVerdict&&S.lastVerdict!==r){
+  h+='<div class="note chg">&#9888; This changed. It was <b>'+vName(S.lastVerdict)+'</b> and is now <b>'+vName(r)+'</b> &mdash; because you edited an earlier answer.</div>';
+ }
+ S.lastVerdict=r;
+ if(r==='INCOMPLETE'){
+  h+='<div class="verdict v-ne"><div class="vt">Not enough to decide yet</div><div class="vh">Clinician screens needed</div>'+
+   '<div class="vw">With LKW <b>'+bucketName(L.bucket)+'</b>, activation depends on the LVO (FANG-D) screen, the BAO screen and whether symptoms are disabling. Add those and the decision resolves.</div></div>'+
+   '<div class="card">'+navBtns('Back to screening',"go('screen')")+'</div>';
+  return h;
+ }
+ if(r==='OUT'){
+  h+='<div class="verdict v-out"><div class="vt">Decision</div><div class="vh">Outside pathway</div><div class="vw">'+
+   (S.otherCause?'Deficits are explained by peripheral nerve, glucose or another obvious cause.':'All screens are negative.')+
+   ' This patient does not enter the acute stroke pathway.</div></div>'+
+   '<div class="card"><p>If anything changes &mdash; a new deficit, a screen turning positive &mdash; edit the chip above and the pathway re-opens.</p>'+navBtns('Back to screening',"go('screen')")+'</div>';
+  return h;
+ }
+ if(r==='NE'){
+  h+='<div class="verdict v-ne"><div class="vt">Decision</div><div class="vh">Stroke workup, non-emergent</div><div class="vw">'+neWhy()+'</div></div>'+
+   '<div class="card">'+navBtns('Non-emergent orders &rarr;',"go('nonem')")+'</div>';
+  return h;
+ }
+ h+='<div class="verdict v-code"><div class="vt">Decision</div><div class="vh">CODE STROKE</div><div class="vw">'+codeWhy()+'</div></div>';
+ h+='<div class="card"><div class="lbl" style="margin-top:0">Why &mdash; activation depends on what is positive, given LKW</div>'+actTable()+
+  navBtns('Code Stroke actions &rarr;',"go('code')")+'</div>';
+ return h;
+};
+function vName(r){return{CODE:'Code Stroke',NE:'Non-emergent workup',OUT:'Outside pathway',INCOMPLETE:'undecided'}[r]||r;}
+function neWhy(){
+ var L=lkw();
+ if(S.resolved)return'Symptoms have resolved.';
+ if(L.bucket==='over24')return'Last known well is more than 24 hours ago ('+L.label+').';
+ return'LKW is in the 4.5 &ndash; 24 hour window with <b>no LVO, no BAO and no disabling symptoms</b>.';
+}
+function codeWhy(){
+ var L=lkw(),bits=[];
+ if(S.befast==='pos')bits.push('BE-FAST positive');
+ if(S.lvo==='pos')bits.push('LVO (FANG-D) positive');
+ if(S.bao==='pos')bits.push('BAO positive');
+ if(S.disabling===true)bits.push('disabling symptoms');
+ return bits.join(', ')+' with LKW <b>'+bucketName(L.bucket)+'</b>.';
+}
+function actTable(){
+ var L=lkw(),m=L.bucket==='mid'||L.bucket==='unknown';
+ function row(lbl,a,b,hitA,hitB){return '<tr class="'+((L.bucket==='lt45'&&hitA)||(m&&hitB)?'hit':'')+'"><td>'+lbl+'</td><td>'+a+'</td><td>'+b+'</td></tr>';}
+ return '<table class="t"><tr><th></th><th>LKW &lt; 4.5 h</th><th>LKW 4.5 &ndash; 24 h</th></tr>'+
+  row('BE-FAST positive','Code Stroke','&mdash;',S.befast==='pos',false)+
+  row('Disabling symptoms','Code Stroke','Code Stroke',S.disabling===true,S.disabling===true)+
+  row('LVO positive','Code Stroke','Code Stroke',S.lvo==='pos',S.lvo==='pos')+
+  row('BAO positive','Code Stroke','Code Stroke',S.bao==='pos',S.bao==='pos')+
+  '</table><div style="font-size:.76em;color:var(--mute)">Highlighted row(s) = what applies to this patient.</div>';
+}
+V.code=function(){
+ var cta=ctaOrder();
+ var h='<div class="verdict v-code" style="padding:13px"><div class="vh" style="font-size:1.2em;margin:0">CODE STROKE</div></div>';
+ h+='<div class="card"><div class="eyebrow">Step 3 of 3 &nbsp;&middot;&nbsp; activation</div><div class="q">Activate and order</div>'+
+  '<div class="sub">Everyone on the pathway sees these once activated.</div>';
+ h+='<div class="lbl" style="margin-top:0">Notify</div><div>'+who('nursing')+R('narrator','Stroke Narrator')+'</div>'+
+  '<div style="margin-top:6px">'+who('clinician')+E('In-person or virtual (Telestroke) Neuro consult')+'</div>';
+ h+='<div class="lbl">Orders</div><div>'+who('clinician')+E('Code Stroke Order Set')+'</div>';
+ h+=imagingCard();
+ h+='<div style="font-size:.8em;color:var(--mute)"><b>Time goals</b> &nbsp; CT initiated &le; 20 min &nbsp;&middot;&nbsp; interpreted &le; 35 min</div>';
+ h+=navBtns('Manage &mdash; CT results &rarr;',"go('manage')")+'</div>';
+ return h;
+};
+
+V.nonem=function(){
+ var h='<div class="verdict v-ne" style="padding:13px"><div class="vh" style="font-size:1.15em;margin:0">Stroke workup, non-emergent</div></div>';
+ h+='<div class="card"><div class="q">Non-emergent stroke orders</div><div class="sub">All items below are Epic orders.</div>'+
+  '<div class="lbl" style="margin-top:0">Imaging</div>'+E('CT Head w/o')+E('CTA Brain / Neck')+
+  '<div class="lbl">Labs</div>'+E('POC Glucose, BMP, CBC')+
+  '<div class="lbl">Patient care</div>'+E('Swallow Screen')+E('BP Params (&lt; 220 / 120)')+E('Neuro checks + vitals q4h')+E('Maintain SpO2 &ge; 94 %')+E('Notify parameters')+
+  '<div class="note">Notify if &nbsp;BP &gt; 220 / 120 &nbsp;&middot;&nbsp; SpO2 &lt; 94 % &nbsp;&middot;&nbsp; neurological changes</div>'+
+  navBtns('Admit &rarr;',"S.dispo='admit-ne';go('summary')")+'</div>'+
+  '<div class="card"><div class="lbl" style="margin-top:0">On admission</div><ul class="tight"><li>Neuro consult during admission</li><li>No neuro consult needed in the ED unless there is an acute process or concern</li></ul></div>';
+ return h;
+};
+
+V.manage=function(){
+ var h='<div class="card"><div class="eyebrow">Manage &nbsp;&middot;&nbsp; clinician with neurology</div><div class="q">Review CT results with Neurology</div>'+
+  '<div class="sub">Review these before the CT branch. Document NIHSS if it has not been done, or if it has changed.</div>';
+ h+='<div class="lbl" style="margin-top:0">Review</div>'+
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+
+  '<div><div style="font-size:.75em;color:var(--mute);margin-bottom:4px">Weight (kg)</div><input type="number" value="'+S.weight+'" oninput="S.weight=this.value"></div>'+
+  '<div><div style="font-size:.75em;color:var(--mute);margin-bottom:4px">Glucose (mg/dL)</div><input type="number" value="'+S.glucose+'" oninput="S.glucose=this.value"></div></div>';
+ h+='<div class="lbl">NIHSS</div>';
+ if(S.nihss===null){h+='<button class="lk lk-doc" style="font-size:.95em;padding:11px 15px" onclick="nihssOpen(false)">&#9998; Document NIHSS &mdash; score it here</button>';}
+ else{
+  var s=sev(S.nihss);
+  h+='<div style="display:flex;align-items:center;gap:12px;background:var(--doc-bg);border:1px solid #b9e2e0;border-radius:9px;padding:12px 14px">'+
+   '<div style="font-size:2em;font-weight:800;color:var(--doc);line-height:1">'+S.nihss+'</div>'+
+   '<div style="flex:1"><div style="font-size:.75em;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Documented NIHSS</div>'+
+   '<div style="font-size:.85em;font-weight:700;color:'+s[1]+'">'+s[0]+'</div></div>'+
+   '<button class="lk lk-doc" onclick="nihssOpen(false)">Re-score</button></div>';
+  if(S.glucose!==''&&(+S.glucose<60||+S.glucose>400))h+='<div class="note crit">Glucose '+S.glucose+' mg/dL &mdash; correct and reassess before attributing deficits to stroke.</div>';
+ }
+ h+=mrsBlock();
+ h+=navBtns('CT result &rarr;',"go('ct')")+'</div>';
+ h+='<div class="card"><div class="lbl" style="margin-top:0">Is this a stroke at all?</div>'+
+  '<div class="sub" style="margin-bottom:9px">Judged on the overall presentation &mdash; glucose, history, examination &mdash; not on the CT.</div>'+
+  R('mimic','Common stroke mimics')+
+  '<label class="chk'+(S.mimic?' on':'')+'" style="margin-top:8px"><input type="checkbox" '+(S.mimic?'checked':'')+
+  ' onchange="S.mimic=this.checked;render()"><span>Deficits are explained by a <b>non-stroke cause</b></span></label>'+
+  (S.mimic?'<div class="nav"><button class="btn btn-p" onclick="S.ct=null;go(\'nonstroke\')">Exit &mdash; dispo for non-stroke etiology &rarr;</button></div>':'')+
+  '</div>';
+ return h;
+};
+
+function imagingRec(){
+ var L=lkw(), hit=ctaOrder(), r={};
+ var trig=[]; if(S.lvo==='pos')trig.push('LVO (FANG-D) positive'); if(S.bao==='pos')trig.push('BAO positive'); if(S.disabling===true)trig.push('disabling symptoms');
+ if(L.bucket==='over24'){
+  r.order='Non-emergent brain imaging';
+  r.detail='CT head W/O &plusmn; CTA H&amp;N';
+  r.ctp=false; r.row='&gt; 24 hours &middot; any screen';
+  r.why='Beyond 24 hours there is no role for CT perfusion.';
+ }else if(hit){
+  r.order='CT Code Stroke WITH Perfusion';
+  r.detail='NCCT + CTA H&amp;N + CTP';
+  r.ctp=true; r.row=(L.bucket==='lt45'?'&lt; 4.5 hours':'4.5 &ndash; 24 hours')+' &middot; '+
+   (S.lvo==='pos'?'LVO positive':'BAO / disabling &mdash; same perfusion row as LVO positive');
+  r.why=trig.join(', ')+' &mdash; perfusion imaging is needed to assess thrombectomy candidacy.';
+ }else if(L.bucket==='lt45'){
+  r.order='CT Code Stroke Head W/O only';
+  r.detail='NCCT &mdash; in select cases may add CTA H&amp;N';
+  r.ctp=false; r.row='&lt; 4.5 hours &middot; LVO negative';
+  r.why='LVO and BAO screens negative and symptoms not disabling &mdash; non-contrast CT is enough to decide on thrombolytics.';
+ }else{
+  r.order='Non-emergent imaging';
+  r.detail='CT head W/O &plusmn; CTA H&amp;N &mdash; no CTP';
+  r.ctp=false; r.row='4.5 &ndash; 24 hours &middot; LVO negative';
+  r.why='Outside the thrombolytic window with no LVO, BAO or disabling symptoms &mdash; there is no perfusion decision to make.';
+ }
+ r.avail=r.ctp;
+ return r;
+}
+function imagingCard(){
+ var r=imagingRec();
+ return '<div class="verdict '+(r.ctp?'v-code':'v-ok')+'" style="padding:14px;text-align:left;margin:10px 0">'+
+  '<div class="vt">Imaging for this patient</div>'+
+  '<div class="vh" style="font-size:1.1em;margin:2px 0 4px">'+r.order+'</div>'+
+  '<div class="vw"><b>'+r.detail+'</b><br>'+r.why+
+  (r.avail?'<br><i>If CT perfusion is available at your site.</i>':'')+'</div></div>'+
+  '<div style="font-size:.76em;color:var(--mute)">Matches the imaging protocol table: <b>'+r.row+'</b>. '+
+  R('imaging','Full imaging protocol')+'</div>';
+}
+function mrsTarget(){return S.lvo==='pos'||S.bao==='pos';}
+var MRSL=['No symptoms','No significant disability','Slight disability','Moderate disability','Moderately severe','Severe disability'];
+function mrsBlock(){
+ if(!mrsTarget())return'';
+ var h='<div class="lbl">Pre-stroke mRS '+R('mrs','scale')+'<span style="font-weight:400;text-transform:none;letter-spacing:0"> &mdash; needed for thrombectomy eligibility</span></div>'+
+  '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px">';
+ for(var i=0;i<6;i++){
+  var on=S.mrs===i;
+  h+='<button class="opt'+(on?' sel':'')+'" style="justify-content:center;padding:11px 2px;font-size:1.05em;font-weight:800'+
+   (on?';border-color:'+(i<=2?'var(--green)':'var(--dispo)')+';background:'+(i<=2?'var(--green-bg)':'var(--dispo-bg)')+';box-shadow:inset 0 0 0 1px '+(i<=2?'var(--green)':'var(--dispo)'):'')+
+   '" onclick="S.mrs='+i+';render()">'+i+'</button>';
+ }
+ h+='</div>';
+ if(S.mrs!==null){
+  var e=S.mrs<=2?['Standard eligibility for most EVT windows','v-ok']:S.mrs<=4?['Individualised basis, if radiographic criteria are met','v-ne']:['Generally not a thrombectomy candidate','v-out'];
+  h+='<div class="verdict '+e[1]+'" style="padding:11px;margin:9px 0 0"><div class="vw"><b>mRS '+S.mrs+' &mdash; '+MRSL[S.mrs]+'</b><br>'+e[0]+'</div></div>';
+ }else{
+  h+='<div style="font-size:.78em;color:var(--mute);margin-top:6px">Baseline function <b>before</b> this stroke.</div>';
+ }
+ return h;
+}
+V.ct=function(){
+ var L=lkw();
+ var h='<div class="card"><div class="eyebrow">Manage</div><div class="q">What does the CT show?</div>'+
+ '<div class="sub">Bleed or no bleed. Only the arm you choose appears next.</div><div class="opts">'+
+ opt('Ischemic / unremarkable','No haemorrhage &mdash; continues to thrombolytic / thrombectomy assessment','',"set('ct','ischemic');ctNext()",S.ct==='ischemic')+
+ opt('Hemorrhagic stroke','Intracerebral haemorrhage order set','',"set('ct','hemorrhagic');go('ich')",S.ct==='hemorrhagic')+
+ '</div>';
+ if(S.ct==='ischemic'){
+  h+='<div class="note">With LKW <b>'+bucketName(L.bucket)+'</b>, this goes to '+
+   (L.bucket==='lt45'?'the <b>standard thrombolytic</b> assessment.':'<b>additional imaging and thrombectomy</b> assessment.')+'</div>';
+ }
+ h+='<div class="note">A normal CT does not rule out ischemic stroke. If the deficits are instead explained by a non-stroke cause, that call is made on the '+
+  '<button class="lk lk-ref" onclick="go(\'manage\')" style="margin:0 2px">Review</button> step, not here.</div>';
+ h+=navBtns('')+'</div>';
+ return h;
+};
+function ctNext(){var L=lkw();go(L.bucket==='lt45'?'lytics':'imaging');}
+
+V.ich=function(){
+ return '<div class="verdict v-code" style="padding:13px"><div class="vh" style="font-size:1.2em;margin:0">Hemorrhagic stroke</div></div>'+
+ '<div class="card"><div class="q">Intracerebral haemorrhage</div>'+E('Intracerebral Hemorrhage Order Set')+
+ navBtns('')+'</div>'+
+ '<div class="card"><div class="q" style="font-size:1.05em">Disposition</div><div class="opts">'+
+ opt('Admit','For hemorrhagic stroke workup','',"S.dispo='admit-ich';go('summary')")+
+ opt('Transfer','For hemorrhagic stroke workup','',"S.dispo='transfer-ich';go('summary')")+'</div></div>';
+};
+V.nonstroke=function(){
+ return '<div class="verdict v-out" style="padding:13px"><div class="vh" style="font-size:1.15em;margin:0">Non-stroke etiology</div></div>'+
+ '<div class="card"><p>Dispo the patient for the non-stroke etiology. The stroke pathway ends here.</p>'+
+ navBtns('Summary &rarr;',"S.dispo='non-stroke';go('summary')")+'</div>';
+};
+
+V.lytics=function(){
+ var ready=S.cxReviewed&&(S.discPt||S.discTeam);
+ var h='<div class="card"><div class="eyebrow">Manage &nbsp;&middot;&nbsp; with neurology</div><div class="q">Thrombolytics candidate?</div>'+
+ '<div class="sub">Ischemic stroke, LKW &lt; 4.5 hours.</div>'+
+ '<div class="lbl" style="margin-top:0">Prior to ordering thrombolytics</div>'+
+ R('cx','Review relative and absolute contraindications')+
+ '<label class="chk'+(S.cxReviewed?' on':'')+'" style="margin-top:8px"><input type="checkbox" '+(S.cxReviewed?'checked':'')+' onchange="S.cxReviewed=this.checked;render()"><span><b>Contraindications reviewed</b></span></label>'+
+ '<div class="lbl">Risks and benefits of thrombolytics were discussed with</div>'+
+ '<label class="chk'+(S.discPt?' on':'')+'"><input type="checkbox" '+(S.discPt?'checked':'')+' onchange="S.discPt=this.checked;render()"><span>patient and / or family</span></label>'+
+ '<label class="chk'+(S.discTeam?' on':'')+'"><input type="checkbox" '+(S.discTeam?'checked':'')+' onchange="S.discTeam=this.checked;render()"><span>the medical team</span></label>';
+ if(S.nihss!==null)h+='<div class="note">Documented NIHSS <b>'+S.nihss+'</b> &mdash; '+sev(S.nihss)[0]+'.</div>';
+ h+='<div class="lbl">Candidate for thrombolytics?</div><div class="row2">'+
+  opt('Yes','','pos',"S.lyticsGiven=true;go('tnk')")+
+  opt('No','','neg',"S.lyticsGiven=false;go('imaging')")+'</div>';
+ if(!ready)h+='<div class="note">Both boxes above are part of the pathway before lytics are ordered.</div>';
+ h+=navBtns('')+'</div>';
+ return h;
+};
+
+V.tnk=function(){
+ return '<div class="card"><div class="eyebrow">Coordinate with neurology</div><div class="q">Thrombolytics</div>'+
+ E('Code Stroke Tenecteplase Orders')+
+ '<div class="note crit">Prior to lytics, <b>BP must be &lt; 185 / 110</b>. Use labetalol / nicardipine in the orders.</div>'+
+ (S.weight?'<div class="note">Documented weight <b>'+S.weight+' kg</b> &mdash; TNK dosing in the Acute Stroke Management Guide.</div>':'<div class="note">Weight not documented yet &mdash; needed for TNK dosing.</div>')+
+ navBtns('Additional imaging &rarr;',"go('imaging')")+'</div>';
+};
+
+V.imaging=function(){
+ var r=imagingRec();
+ var h='<div class="card"><div class="eyebrow">Manage</div><div class="q">Additional imaging?</div>'+
+  '<p>May need '+E('CTA / CT perfusion')+' studies, if available and not already obtained.</p>'+
+  imagingCard();
+ if(!r.ctp)h+='<div class="note">The protocol does not call for CTP on these inputs. If the clinical picture has changed &mdash; a new deficit, a screen turning positive &mdash; update the '+
+  '<button class="lk lk-ref" style="margin:0 2px" onclick="jump(\'screen\')">screening step</button> and this recalculates.</div>';
+ h+=navBtns('Thrombectomy assessment &rarr;',"go('mt')")+'</div>';
+ return h;
+};
+V.mt=function(){
+ var L=lkw(),h='<div class="card"><div class="eyebrow">Manage &nbsp;&middot;&nbsp; with neurology</div><div class="q">Mechanical thrombectomy candidate?</div>'+
+ '<div class="lbl" style="margin-top:0">Criteria</div><ul class="tight"><li>Anterior circulation LVO: <b>ICA or proximal MCA</b></li>'+
+ '<li>By LKW: <b>&lt; 6 h</b> <i>ideal</i> &nbsp;&middot;&nbsp; <b>&lt; 16 h</b> <i>reasonable</i> &nbsp;&middot;&nbsp; <b>&lt; 24 h</b> <i>and</i> perfusion mismatch on CT</li></ul>';
+ if(S.mrs!==null){
+  var me=S.mrs<=2?'standard eligibility':S.mrs<=4?'individualised &mdash; only if radiographic criteria are met':'generally not a candidate';
+  h+='<div class="note"><b>Pre-stroke mRS '+S.mrs+'</b> ('+MRSL[S.mrs]+') &mdash; '+me+'.</div>';
+ }else if(mrsTarget()){
+  h+='<div class="note chg">Pre-stroke mRS not documented &mdash; it drives thrombectomy eligibility. '+
+   '<button class="lk lk-ref" style="margin:4px 0 0" onclick="jump(\'manage\')">Set it on the Review step</button></div>';
+ }
+ if(L.hours!==null&&!L.unknown){
+  var w=L.hours<6?['&lt; 6 h &mdash; ideal window','v-ok']:L.hours<16?['&lt; 16 h &mdash; reasonable','v-ne']:L.hours<24?['&lt; 24 h &mdash; requires perfusion mismatch on CT','v-ne']:['&gt; 24 h &mdash; outside the thrombectomy window','v-out'];
+  h+='<div class="verdict '+w[1]+'" style="padding:12px;margin:10px 0"><div class="vw"><b>This patient: '+fmtH(L.hours)+' since LKW</b><br>'+w[0]+'</div></div>';
+ }
+ h+='<div class="lbl">Candidate?</div><div class="row2">'+
+  opt('Yes','','pos',"S.mtDone=true;go('mtcoord')")+
+  opt('No','','neg',"S.mtDone=false;go('extgate')")+'</div>'+navBtns('')+'</div>';
+ return h;
+};
+V.mtcoord=function(){
+ return '<div class="card"><div class="eyebrow">Coordinate with neurology</div><div class="q">Mechanical thrombectomy</div>'+
+ '<ul class="tight"><li><b>Patient transfer?</b> via fastest route</li><li><b>In-house MT?</b> '+E('Order Here')+'</li></ul>'+
+ navBtns('Dispo &rarr;',"go('dispo')")+'</div>';
+};
+
+function extEligible(){var L=lkw();return (L.bucket==='mid'||L.bucket==='unknown')&&!S.lyticsGiven&&!S.mtDone;}
+V.extgate=function(){
+ if(extEligible())return V.ext();
+ var L=lkw(),why=S.lyticsGiven?'thrombolytics have already been given':S.mtDone?'mechanical thrombectomy was performed':'LKW is '+bucketName(L.bucket)+', not 4.5 &ndash; 24 hours';
+ return '<div class="card"><div class="eyebrow">Manage</div><div class="q">Extended-window thrombolytics do not apply</div>'+
+ '<div class="note">This branch is hidden because '+why+'. Extended-window lytics require LKW 4.5 &ndash; 24 h, no thrombolytics already given, and no thrombectomy performed.</div>'+
+ navBtns('Dispo &rarr;',"go('dispo')")+'</div>';
+};
+V.ext=function(){
+ var h='<div class="card"><div class="eyebrow">Manage &nbsp;&middot;&nbsp; neurology consultation required</div><div class="q">&ldquo;Extended window&rdquo; thrombolytics candidate?</div>'+
+ '<div class="sub">LKW 4.5 &ndash; 24 hours.</div>'+
+ '<div class="note crit"><b>ONLY</b> in consultation with Neurology<br><b>ONLY</b> if thrombolytics were NOT already given<br><b>ONLY</b> if mechanical thrombectomy was NOT performed</div>'+
+ '<div class="lbl">Criteria</div><div>'+R('nihss6','NIHSS 6 and/or disabling symptoms')+R('ext','Extended window imaging and thrombolytic criteria')+'</div>'+
+ '<ul class="tight" style="margin-top:8px"><li>Recommended by Neurology</li></ul>';
+ if(S.nihss!==null||S.disabling!==null){
+  h+='<div class="note">This patient: NIHSS <b>'+(S.nihss===null?'not documented':S.nihss)+'</b>'+
+   (S.disabling!==null?' &nbsp;&middot;&nbsp; disabling symptoms <b>'+(S.disabling?'yes':'no'):'')+'</b>'+
+   ((S.nihss!==null&&S.nihss>=6)||S.disabling?' &mdash; meets the NIHSS 6 / disabling criterion.':' &mdash; does not meet the NIHSS 6 / disabling criterion.')+'</div>';
+ }
+ h+='<div class="lbl">Prior to ordering thrombolytics</div>'+R('cx','Review relative and absolute contraindications')+
+ '<label class="chk'+(S.cxReviewed?' on':'')+'" style="margin-top:8px"><input type="checkbox" '+(S.cxReviewed?'checked':'')+' onchange="S.cxReviewed=this.checked;render()"><span><b>Contraindications reviewed</b></span></label>'+
+ '<div class="lbl">Risks and benefits were discussed with</div>'+
+ '<label class="chk'+(S.discPt?' on':'')+'"><input type="checkbox" '+(S.discPt?'checked':'')+' onchange="S.discPt=this.checked;render()"><span>patient and / or family</span></label>'+
+ '<label class="chk'+(S.discTeam?' on':'')+'"><input type="checkbox" '+(S.discTeam?'checked':'')+' onchange="S.discTeam=this.checked;render()"><span>the medical team</span></label>'+
+ '<div class="lbl">Candidate?</div><div class="row2">'+
+  opt('Yes','','pos',"S.extGiven=true;go('extcoord')")+
+  opt('No','','neg',"S.extGiven=false;go('dispo')")+'</div>'+navBtns('')+'</div>';
+ return h;
+};
+V.extcoord=function(){
+ return '<div class="card"><div class="eyebrow">Coordinate with neurology</div><div class="q">&ldquo;Extended window&rdquo; thrombolytics</div>'+
+ E('Code Stroke Tenecteplase Orders')+
+ '<div class="note crit">Prior to lytics, <b>BP must be &lt; 185 / 110</b>. Use labetalol / nicardipine in the orders.</div>'+
+ navBtns('Dispo &rarr;',"go('dispo')")+'</div>';
+};
+
+V.dispo=function(){
+ var h='<div class="card"><div class="eyebrow">Dispo, with neurology</div><div class="q">Disposition</div>'+
+ '<div class="sub">Complete clinical documentation + <b>final NIHSS</b> at the time of dispo / transfer.</div>';
+ if(S.nihssFinal===null){h+='<button class="lk lk-doc" style="font-size:.95em;padding:11px 15px" onclick="nihssOpen(true)">&#9998; Document final NIHSS</button>';}
+ else{
+  h+='<div style="display:flex;align-items:center;gap:12px;background:var(--doc-bg);border:1px solid #b9e2e0;border-radius:9px;padding:12px 14px">'+
+  '<div style="font-size:1.8em;font-weight:800;color:var(--doc);line-height:1">'+S.nihssFinal+'</div>'+
+  '<div style="flex:1"><div style="font-size:.75em;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Final NIHSS</div>'+
+  '<div style="font-size:.82em;color:var(--mute)">'+(S.nihss!==null?'Initial was '+S.nihss+(S.nihssFinal>S.nihss?' &mdash; worsened by '+(S.nihssFinal-S.nihss):S.nihssFinal<S.nihss?' &mdash; improved by '+(S.nihss-S.nihssFinal):' &mdash; unchanged'):'')+'</div></div>'+
+  '<button class="lk lk-doc" onclick="nihssOpen(true)">Re-score</button></div>';
+ }
+ h+='<div class="lbl">Disposition</div><div class="opts">'+
+  opt('Discharge','','',"S.dispo='discharge';go('summary')")+
+  opt('Admit (in-house)',(S.lyticsGiven||S.mtDone||S.extGiven)?'Lytics or MT ordered &rarr; Neuro ICU':'','',"S.dispo='admit';go('summary')")+
+  opt('Transfer','Primary &amp; Comprehensive Stroke Centers','',"S.dispo='transfer';go('summary')")+'</div>';
+ if(S.lyticsGiven||S.mtDone||S.extGiven)h+='<div class="note crit">Lytics or MT ordered &mdash; admission goes to <b>Neuro ICU</b>.</div>';
+ h+='<div style="margin-top:8px">'+E('Admit')+E('Transfer')+E('Discharge')+R('centers','Stroke centre list (NC + GA)')+'</div>';
+ h+=navBtns('')+'</div>';
+ return h;
+};
+/* ============ SUMMARY ============ */
+function sumText(){
+ var L=lkw(),o=[];
+ o.push('SUSPECTED ACUTE STROKE PATHWAY — ENCOUNTER SUMMARY');
+ o.push('');
+ o.push('Last known well : '+(L.unknown?'Unknown':(S.lkwDate+' '+S.lkwTime+' '+tzAbbr()+'  ('+L.label+', '+bucketName(L.bucket)+')')));
+ o.push('Screens         : BE-FAST '+(S.befast?S.befast.toUpperCase():'not done')+
+   ' | LVO/FANG-D '+(S.lvo?S.lvo.toUpperCase():'not done')+
+   ' | BAO '+(S.bao?S.bao.toUpperCase():'not done')+
+   ' | Disabling sx '+(S.disabling===null?'not assessed':S.disabling?'YES':'NO'));
+ if(S.resolved)o.push('                  Symptoms resolved');
+ if(S.otherCause)o.push('                  Deficits explained by peripheral nerve / glucose / other cause');
+ o.push('Activation      : '+vName(S.lastVerdict||route()));
+ if(S.weight||S.glucose)o.push('Review          : weight '+(S.weight||'—')+' kg | glucose '+(S.glucose||'—')+' mg/dL');
+ if(S.nihss!==null)o.push('NIHSS (initial) : '+S.nihss+'  ('+sev(S.nihss)[0]+')');
+ if(S.mrs!==null)o.push('Pre-stroke mRS  : '+S.mrs+'  ('+MRSL[S.mrs]+')');
+ if(S.nihssFinal!==null)o.push('NIHSS (final)   : '+S.nihssFinal+'  ('+sev(S.nihssFinal)[0]+')');
+ o.push('Imaging called  : '+imagingRec().order.replace(/&[a-z]+;/g,''));
+ if(S.ct)o.push('CT result       : '+{ischemic:'Ischemic / unremarkable (no haemorrhage)',hemorrhagic:'Hemorrhagic stroke'}[S.ct]);
+ if(S.ct==='ischemic'){
+  o.push('Thrombolytics   : '+(S.lyticsGiven?'YES — Code Stroke Tenecteplase orders':S.extGiven?'YES — extended window, with Neurology':'No'));
+  o.push('Thrombectomy    : '+(S.mtDone?'YES — coordinated with Neurology':'No'));
+  if(S.cxReviewed)o.push('                  Contraindications reviewed');
+  if(S.discPt||S.discTeam)o.push('                  Risks/benefits discussed with '+[S.discPt?'patient/family':'',S.discTeam?'medical team':''].filter(Boolean).join(' and '));
+ }
+ o.push('Disposition     : '+({discharge:'Discharge',admit:'Admit (in-house)'+((S.lyticsGiven||S.mtDone||S.extGiven)?' — Neuro ICU':''),transfer:'Transfer to stroke centre','admit-ne':'Admit — non-emergent stroke workup','admit-ich':'Admit — hemorrhagic stroke workup','transfer-ich':'Transfer — hemorrhagic stroke workup','non-stroke':'Dispo for non-stroke etiology'}[S.dispo]||'not set'));
+ o.push('');
+ o.push('Generated by the guided pathway prototype — not a validated clinical record.');
+ return o.join('\n');
+}
+V.summary=function(){
+ var d=S.dispo||'', ok=['discharge','admit','transfer','admit-ne','admit-ich','transfer-ich'].indexOf(d)>=0;
+ var h='<div class="verdict '+(ok?'v-ok':'v-out')+'"><div class="vt">Pathway complete</div><div class="vh">'+
+  ({discharge:'Discharge',admit:'Admit',transfer:'Transfer','admit-ne':'Admit',"admit-ich":'Admit','transfer-ich':'Transfer','non-stroke':'Non-stroke etiology'}[d]||'Summary')+
+  '</div><div class="vw">Everything captured on the pathway, in one block for the note.</div></div>';
+ h+='<div class="card"><div class="lbl" style="margin-top:0">Encounter summary</div><div class="sumbox" id="sumbox">'+
+  sumText().replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div>'+
+  '<div class="nav"><button class="btn btn-s" onclick="back()">&larr; Back</button><button class="btn btn-p" onclick="copySum(this)">Copy summary</button></div></div>';
+ h+='<div class="card"><div class="lbl" style="margin-top:0">Epic items used on this patient</div><div class="sub" style="margin-bottom:8px">These are the links the build team would need to wire.</div>'+epicUsed()+
+  '<div class="nav"><button class="btn btn-p" onclick="restart()">Start a new patient</button></div></div>';
+ return h;
+};
+function epicUsed(){
+ var l=[];
+ var r=S.lastVerdict||route();
+ if(r==='CODE'){l.push('Code Stroke Order Set');l.push(ctaOrder()?'CT / CTA (Code Stroke) with perfusion':'CT (Code Stroke) Head w/o');l.push('Telestroke / Neuro consult');}
+ if(r==='NE'||S.dispo==='admit-ne')l.push('Non-Emergent Stroke Orders (imaging, labs, patient care)');
+ if(S.lyticsGiven||S.extGiven)l.push('Code Stroke Tenecteplase Orders');
+ if(S.mtDone)l.push('Mechanical Thrombectomy — Order Here');
+ if(S.ct==='hemorrhagic')l.push('Intracerebral Hemorrhage Order Set');
+ if(S.dispo==='non-stroke')l.push('Dispo &mdash; non-stroke etiology');
+ if(S.dispo)l.push('Dispo — '+(S.dispo.indexOf('transfer')>=0?'Transfer + stroke centre list':S.dispo==='discharge'?'Discharge':'Admit'));
+ if(!l.length)return '<div class="note">None reached on this path.</div>';
+ return l.map(function(n){return '<span class="lk lk-epic">'+n+'</span>';}).join('');
+}
+function copySum(b){
+ var t=sumText();
+ function done(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy summary';},1600);}
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,fallback);}else fallback();
+ function fallback(){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done();}catch(e){}a.remove();}
+}
+
+/* ============ RENDER ============ */
+function render(){
+ document.getElementById('strip').innerHTML=strip();
+ document.getElementById('main').innerHTML=(V[step]||V.intro)();
+ tick();
+}
+restart();
+ticker=setInterval(tick,20000);
+</script>
+</body>
+</html>
