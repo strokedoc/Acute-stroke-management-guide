@@ -40,7 +40,7 @@ tr:nth-child(even){background:#f8f9fa}
 @media(max-width:700px){
 .layout{flex-direction:column}
 .sidebar{width:100%;min-width:100%;display:flex;flex-wrap:wrap;padding:8px;gap:4px;border-right:none;border-bottom:1px solid #dee2e6}
-.sidebar button{width:auto;padding:6px 10px;font-size:.72em;border-left:none!important;border-radius:4px;white-space:nowrap}
+.sidebar button{width:auto;padding:12px 12px;font-size:.72em;border-left:none!important;border-radius:4px;white-space:nowrap;min-height:44px}
 .sidebar button.active{border-radius:4px}
 .content{max-height:none}
 }
@@ -51,6 +51,7 @@ tr:nth-child(even){background:#f8f9fa}
 <h1>Acute Stroke Management Guide</h1>
 <p>Telestroke Quick Reference — IV TNK • Extended Window • EVT</p>
 </div>
+<noscript><div style="background:#fdf2f2;border-left:4px solid #c0392b;padding:14px 18px;margin:14px;border-radius:6px;font-size:.9em"><b>JavaScript is switched off.</b> This guide needs it to show its sections and to run the NIHSS and tenecteplase calculators. Please enable JavaScript and reload.</div></noscript>
 <div class="layout">
 <div class="sidebar" id="sb">
 <button class="active" data-t="s0">&#9889; Guided Pathway</button>
@@ -69,16 +70,29 @@ tr:nth-child(even){background:#f8f9fa}
 <button data-t="s12">Telestroke Color Scenarios</button>
 <button data-t="s11">Trial Summary (IVT + EVT)</button>
 </div>
+<script>
+/* Nav wired here, ahead of the embedded diagrams, so the sidebar
+   responds as soon as it renders rather than after the whole page loads. */
+document.querySelectorAll('#sb button').forEach(function(b){
+b.addEventListener('click',function(){
+document.querySelectorAll('#sb button').forEach(function(x){x.classList.remove('active')});
+document.querySelectorAll('.section').forEach(function(x){x.classList.remove('active')});
+this.classList.add('active');
+document.getElementById(this.dataset.t).classList.add('active');
+});
+});
+</script>
 <div class="content">
 
 <div class="section active" id="s0">
 <h2>Suspected Acute Stroke — Guided Pathway</h2>
-<p>The Epic <i>Suspected Acute Stroke SE</i> pathway, rebuilt so you answer one question at a time and only see the branches your patient is actually on. Enter last known well and the screens; it works out Code Stroke vs non-emergent, the imaging order, and the thrombolytic and thrombectomy assessments, and produces a summary for the note.</p>
-<div class="alert ab"><div class="at">Prototype for discussion</div>Clinical content is transcribed from the current Epic pathway. Purple items are Epic-native links that would need wiring if adopted; blue items are reference content that can live in the app; green items are documented in the app (NIHSS, mRS). Not a validated clinical decision tool.</div>
+<p style="font-size:.9em;color:#6c757d;margin-bottom:10px">One question at a time. <a href="guided-pathway.html" target="_blank" rel="noopener"><b>Open full screen &#8599;</b></a></p>
 <div style="border:1px solid #dee2e6;border-radius:8px;overflow:hidden;background:#f4f6fa">
 <iframe src="guided-pathway.html" title="Suspected Acute Stroke — Guided Pathway" style="width:100%;height:78vh;min-height:560px;border:0;display:block"></iframe>
 </div>
-<p style="margin-top:10px;font-size:.85em;color:#6c757d">Not displaying? <a href="guided-pathway.html" target="_blank" rel="noopener">Open the pathway in a new tab</a>.</p>
+<h3>About this pathway</h3>
+<p>The Epic <i>Suspected Acute Stroke SE</i> pathway, rebuilt so you answer one question at a time and only see the branches your patient is actually on. Enter last known well and the screens; it works out Code Stroke vs non-emergent, the imaging order, and the thrombolytic and thrombectomy assessments, and produces a summary for the note.</p>
+<div class="alert ab"><div class="at">Prototype for discussion</div>Clinical content is transcribed from the current Epic pathway. Purple items are Epic-native links that would need wiring if adopted; blue items are reference content that can live in the app; green items are documented in the app (NIHSS, mRS). Not a validated clinical decision tool.</div>
 </div>
 
 <div class="section" id="s1">
@@ -96,7 +110,8 @@ tr:nth-child(even){background:#f8f9fa}
 <h3>LKW &gt;4.5 – 24 Hours</h3>
 <div class="cl"><ul>
 <li>Sudden, unexplained comatose-like state, <b>OR</b></li>
-<li><b>FANG-D positive</b> (see FANG-D tab)</li>
+<li><b>FANG-D positive</b> (see FANG-D tab), <b>OR</b></li>
+<li><b>Disabling symptoms</b> — deficits that would prevent return to baseline work or ADLs</li>
 </ul></div>
 <h3>LKW &gt;24 Hours or Resolved Symptoms</h3>
 <p>No code stroke. Non-emergent imaging only. No CT perfusion role.</p>
@@ -353,12 +368,12 @@ function tnkCalc() {
 
   var kg = unit === 'lbs' ? raw / 2.2046 : raw;
   var rawDose = kg * 0.25;
-  var dose = Math.min(rawDose, 25);
+  var dose = Math.round(Math.min(rawDose, 25) * 10) / 10;
   var vol  = dose / 5;
   var capped = rawDose > 25;
 
   doseEl.textContent = dose.toFixed(1) + ' mg';
-  volEl.textContent  = vol.toFixed(1) + ' mL';
+  volEl.textContent  = vol.toFixed(2) + ' mL';
 
   var notes = [];
   if (unit === 'lbs') notes.push('(' + kg.toFixed(1) + ' kg)');
@@ -373,6 +388,7 @@ function tnkCalc() {
 </script>
 <table><tr><th>Weight (kg)</th><th>TNK (mg)</th><th>Volume (mL)</th></tr>
 <tr><td>&lt;60</td><td>15</td><td>3</td></tr><tr><td>60–&lt;70</td><td>17.5</td><td>3.5</td></tr><tr><td>70–&lt;80</td><td>20</td><td>4</td></tr><tr><td>80–&lt;90</td><td>22.5</td><td>4.5</td></tr><tr><td>≥90</td><td>25</td><td>5</td></tr></table>
+<div class="alert aa"><div class="at">Which number do I use?</div>The banded chart above is for <b>estimated</b> weight — each row rounds up to the top of its band. <b>If an actual weight is known, use the calculator</b> (exact 0.25 mg/kg). A 61 kg patient is 15.3 mg by calculator, 17.5 mg by chart.</div>
 <div class="cl"><ul><li>IV push over <b>5–10 seconds</b></li><li>Max dose: <b>25 mg</b></li><li><b>Do NOT delay</b> to obtain exact weight</li><li>If &lt;50 kg and accurate weight known, per-kg dosing may be used</li></ul></div>
 </div>
 
@@ -947,29 +963,6 @@ window.addEventListener('DOMContentLoaded', function() {
  if (redBtn) { redBtn.style.borderColor = 'rgba(0,0,0,0.3)'; }
 });
 
-document.querySelectorAll('#sb button').forEach(function(b){
-b.addEventListener('click',function(){
-
-function showCS(id, btn) {
- document.querySelectorAll('.cs-panel').forEach(function(p){ p.style.display='none'; });
- document.getElementById(id).style.display = 'block';
- document.querySelectorAll('.ctab').forEach(function(b){ b.style.opacity='0.75'; b.style.borderColor='transparent'; });
- btn.style.opacity = '1';
- btn.style.borderColor = 'rgba(0,0,0,0.3)';
-}
-// Init Red tab active on page load
-window.addEventListener('DOMContentLoaded', function() {
- var redBtn = document.getElementById('ctRed');
- if (redBtn) { redBtn.style.borderColor = 'rgba(0,0,0,0.3)'; }
-});
-
-document.querySelectorAll('#sb button').forEach(function(x){x.classList.remove('active')});
-document.querySelectorAll('.section').forEach(function(x){x.classList.remove('active')});
-this.classList.add('active');
-document.getElementById(this.dataset.t).classList.add('active');
-});
-});
-
 /* ── Pan/Zoom for diagram images ── */
 (function() {
  function initPanZoom(wrapper, img) {
@@ -1033,6 +1026,9 @@ document.getElementById(this.dataset.t).classList.add('active');
  }, { passive: true });
 
  wrapper.addEventListener('touchmove', function(e) {
+ // At rest (one finger, not zoomed in) let the touch scroll the page
+ // instead of panning the diagram — otherwise the tab feels stuck.
+ if (e.touches.length !== 2 && scale <= 1) { return; }
  e.preventDefault();
  if (e.touches.length === 2) {
  var dx = e.touches[0].clientX - e.touches[1].clientX;
