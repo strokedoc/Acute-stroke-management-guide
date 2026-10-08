@@ -674,6 +674,7 @@ V.mt=function(){
   h+='<div class="note chg">Pre-stroke mRS not documented &mdash; it drives thrombectomy eligibility. '+
    '<button class="lk lk-ref" style="margin:4px 0 0" onclick="jump(\'manage\')">Set it on the Review step</button></div>';
  }
+ h+=pfLink('thrombectomy eligibility');
  if(L.hours!==null&&!L.unknown){
   var w=L.hours<6?['&lt; 6 h &mdash; ideal window','v-ok']:L.hours<16?['&lt; 16 h &mdash; reasonable','v-ne']:L.hours<24?['&lt; 24 h &mdash; requires perfusion mismatch on CT','v-ne']:['&gt; 24 h &mdash; outside the thrombectomy window','v-out'];
   h+='<div class="verdict '+w[1]+'" style="padding:12px;margin:10px 0"><div class="vw"><b>This patient: '+fmtH(L.hours)+' since LKW</b><br>'+w[0]+'</div></div>';
@@ -689,6 +690,8 @@ V.mtcoord=function(){
  navBtns('Dispo &rarr;',"go('dispo')")+'</div>';
 };
 
+/* Points to the guide's Reperfusion Pathfinder tab; only works when embedded in the guide. */
+function pfLink(what){return window.parent!==window?'<div class="note">Check '+what+' against the local criteria row by row (ASPECTS, core volume, age, pre-stroke mRS): <button class="lk lk-ref" style="margin:4px 0 0" onclick="parent.postMessage({go:\'s15\'},\'*\')">Open the Reperfusion Pathfinder</button></div>':'';}
 function extEligible(){var L=lkw();return (L.bucket==='mid'||L.bucket==='unknown')&&!S.lyticsGiven&&!S.mtDone;}
 V.extgate=function(){
  if(extEligible())return V.ext();
@@ -702,7 +705,7 @@ V.ext=function(){
  '<div class="sub">LKW 4.5 &ndash; 24 hours.</div>'+
  '<div class="note crit"><b>ONLY</b> in consultation with Neurology<br><b>ONLY</b> if thrombolytics were NOT already given<br><b>ONLY</b> if mechanical thrombectomy was NOT performed</div>'+
  '<div class="lbl">Criteria</div><div>'+R('nihss6','NIHSS 6 and/or disabling symptoms')+R('ext','Extended window imaging and thrombolytic criteria')+'</div>'+
- '<ul class="tight" style="margin-top:8px"><li>Recommended by Neurology</li></ul>';
+ '<ul class="tight" style="margin-top:8px"><li>Recommended by Neurology</li></ul>'+pfLink('extended-window TNK');
  if(S.nihss!==null||S.disabling!==null){
   h+='<div class="note">This patient: NIHSS <b>'+(S.nihss===null?'not documented':S.nihss)+'</b>'+
    (S.disabling!==null?' &nbsp;&middot;&nbsp; disabling symptoms <b>'+(S.disabling?'yes':'no'):'')+'</b>'+

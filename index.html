@@ -37,6 +37,20 @@ tr:nth-child(even){background:#f8f9fa}
 .tg-g{background:#d4edda}.tg-b{background:#cce5ff}
 .footer{margin-top:30px;padding-top:12px;border-top:1px solid #dee2e6;font-size:.75em;color:#6c757d}
 .section{display:none}.section.active{display:block}
+.src{font-size:.8em;color:#6c757d;line-height:1.5;margin:6px 0}
+.pf-h{font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#0e7c7b;margin:14px 0 6px}
+.pf .pf-h:first-child{margin-top:0}
+.pf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px 14px}
+.pf-grid label{display:block;font-size:.8em;font-weight:600;color:#1a2744;margin-bottom:4px;line-height:1.3}
+.pf-grid select,.pf-grid input{width:100%;padding:8px;border:1px solid #ced4da;border-radius:4px;font:inherit;font-size:.9em;min-height:42px;background:#fff;color:#2c3e50}
+.pf-btn{padding:8px 16px;border:1px solid #1a2744;background:#fff;color:#1a2744;border-radius:4px;font:inherit;font-size:.85em;font-weight:600;cursor:pointer;min-height:42px}
+.pf-btn:hover{background:#1a2744;color:#fff}
+.pf-ck{list-style:none;margin:8px 0}.pf-ck li{margin:4px 0;line-height:1.45}
+.pf-ck b{display:inline-block;width:1.1em}.pf-ck .y{color:#27ae60}.pf-ck .n{color:#c0392b}.pf-ck .u{color:#6c757d}.pf-ck .i{color:#e67e22}
+.pf-trial{border:1px dashed #8e7cc3;border-radius:6px;padding:12px 16px;background:#f8f6fc;margin-top:18px}
+.pf-toggle{font-weight:700;color:#4a3b7c;cursor:pointer;display:flex;align-items:center;gap:8px;min-height:32px}
+.pf-toggle input{width:18px;height:18px}
+.pf-trial .alert{background:#fff;border-left-color:#8e7cc3}
 @media(max-width:700px){
 .layout{flex-direction:column}
 .sidebar{width:100%;min-width:100%;display:flex;flex-wrap:wrap;padding:8px;gap:4px;border-right:none;border-bottom:1px solid #dee2e6}
@@ -55,6 +69,7 @@ tr:nth-child(even){background:#f8f9fa}
 <div class="layout">
 <div class="sidebar" id="sb">
 <button class="active" data-t="s0">&#9889; Guided Pathway</button>
+<button data-t="s15">&#129517; Reperfusion Pathfinder</button>
 <button data-t="s1">Code Stroke Activation</button>
 <button data-t="s2">FANG-D Score</button>
 <button data-t="s3">Imaging Protocol</button>
@@ -94,6 +109,270 @@ document.getElementById(this.dataset.t).classList.add('active');
 <p>The Epic <i>Suspected Acute Stroke SE</i> pathway, rebuilt so you answer one question at a time and only see the branches your patient is actually on. Enter last known well and the screens; it works out Code Stroke vs non-emergent, the imaging order, and the thrombolytic and thrombectomy assessments, and produces a summary for the note.</p>
 <div class="alert ab"><div class="at">Prototype for discussion</div>Clinical content is transcribed from the current Epic pathway. Purple items are Epic-native links that would need wiring if adopted; blue items are reference content that can live in the app; green items are documented in the app (NIHSS, mRS). Not a validated clinical decision tool.</div>
 </div>
+
+<div class="section" id="s15">
+<h2>Reperfusion Pathfinder</h2>
+<p>Enter what you know. The <b>Advocate protocol</b> result checks the patient against this guide's local TNK, extended-window TNK and thrombectomy criteria, line by line, and shows which items are met (&#10003;), not met (&#10007;) or still unknown (?). It restates the local criteria for the inputs given. It does not weigh this patient's individual risk, and decisions stay with the treating team and stroke neurology.</p>
+<div class="cl pf">
+<p class="pf-h">The clock &amp; the scan</p>
+<div class="pf-grid">
+<div><label for="rpTime">Time from last known well</label><select id="rpTime"><option value="">Select…</option><option value="le45">≤ 4.5 h</option><option value="45to6">4.5 – 6 h</option><option value="6to24">6 – 24 h</option><option value="unk">LKW unknown / wake-up</option><option value="gt24">&gt; 24 h</option></select></div>
+<div><label for="rpIch">Hemorrhage on NCCT?</label><select id="rpIch"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+<div><label for="rpAspects">ASPECTS</label><select id="rpAspects"><option value="">Select…</option><option value="6-10">6 – 10</option><option value="3-5">3 – 5</option><option value="0-2">0 – 2</option></select></div>
+<div><label for="rpHypo">NCCT: extensive hypodensity, or hypodensity larger than CTP core?</label><select id="rpHypo"><option value="">Select…</option><option value="no">No</option><option value="yes">Yes</option></select></div>
+</div>
+<p class="pf-h">The deficit</p>
+<div class="pf-grid">
+<div><label for="rpNihss">NIHSS</label><input type="number" id="rpNihss" min="0" max="42" step="1" inputmode="numeric" placeholder="e.g. 8"></div>
+<div><label for="rpDis">Clearly disabling deficit?</label><select id="rpDis"><option value="">Select…</option><option value="yes">Yes — disabling</option><option value="no">No — non-disabling</option></select></div>
+<div><label for="rpFang">FANG-D</label><select id="rpFang"><option value="">Select…</option><option value="pos">Positive</option><option value="neg">Negative</option></select></div>
+</div>
+<p class="pf-h">The vessels &amp; perfusion</p>
+<div class="pf-grid">
+<div><label for="rpOccl">Occlusion on CTA</label><select id="rpOccl"><option value="">Select…</option><option value="ica">ICA</option><option value="m1">M1</option><option value="pm2">Proximal M2</option><option value="basilar">Basilar</option><option value="mevo">M2 (non-proximal), M3–M4, ACA, PCA, stenosis, or vertebral</option><option value="none">No occlusion seen</option><option value="notdone">CTA not done yet</option></select></div>
+<div id="rpPcField" hidden><label for="rpPc">PC-ASPECTS</label><select id="rpPc"><option value="">Select…</option><option value="ge6">6 or more</option><option value="lt6">Less than 6</option></select></div>
+<div><label for="rpCore">CTP core, mL (rCBF &lt;30%)</label><input type="number" id="rpCore" min="0" step="1" inputmode="decimal" placeholder="Blank if no CTP"></div>
+<div><label for="rpTmax">CTP Tmax &gt;6 s, mL</label><input type="number" id="rpTmax" min="0" step="1" inputmode="decimal" placeholder="Blank if no CTP"></div>
+<div><label for="rpFlair">MRI DWI–FLAIR mismatch (if CTP not available)</label><select id="rpFlair"><option value="">MRI not done</option><option value="yes">Mismatch present</option><option value="no">No mismatch</option></select></div>
+</div>
+<p class="src" id="rpCalc" aria-live="polite"></p>
+<p class="pf-h">The patient &amp; logistics</p>
+<div class="pf-grid">
+<div><label for="rpMrs">Pre-stroke mRS</label><select id="rpMrs"><option value="">Select…</option><option value="0-1">0 – 1</option><option value="2">2</option><option value="3-4">3 – 4</option><option value="5">5</option><option value="unk">Unknown</option></select></div>
+<div><label for="rpAge">Age, years</label><input type="number" id="rpAge" min="18" max="110" step="1" inputmode="numeric" placeholder="e.g. 72"></div>
+<div><label for="rpGlob">Hemodialysis, metastatic cancer, VAD, or life expectancy &lt;1 yr?</label><select id="rpGlob"><option value="">Select…</option><option value="no">None of these</option><option value="yes">Yes — at least one</option></select></div>
+<div><label for="rpEvt">Thrombectomy access</label><select id="rpEvt"><option value="">Select…</option><option value="prompt">EVT planned / available within ~60 min</option><option value="delay">Not an EVT candidate, or delay ≥ 60–90 min</option></select></div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+<button type="button" class="pf-btn" id="rpReset">Reset</button>
+<button type="button" class="pf-btn" id="rpCopy">Copy result</button>
+</div>
+</div>
+
+<h3>Advocate protocol</h3>
+<div id="rpLocal" aria-live="polite"></div>
+
+<div class="pf-trial">
+<label class="pf-toggle"><input type="checkbox" id="rpTrials"> Show trial evidence beyond the local protocol</label>
+<div id="rpTrialOut" hidden>
+<p class="src">Published trial data and the 2026 AHA/ASA guideline, shown only where they add to or differ from the local protocol. <b>For discussion with stroke neurology. This does not override the local criteria above.</b></p>
+<div id="rpTrialCards"></div>
+</div>
+</div>
+<p class="src" style="margin-top:12px">Local criteria are transcribed from this guide's IV TNK, Extended TNK and EVT Eligibility tabs. Not a validated clinical decision tool.</p>
+</div>
+<script>
+(function(){
+var $=function(id){return document.getElementById(id);};
+function v(id){return $(id).value;}
+function num(id){var x=$(id).value;return x===''?NaN:parseFloat(x);}
+function go(id){var b=document.querySelector('#sb button[data-t="'+id+'"]');if(!b)return;b.click();var c=document.querySelector('.content');if(c)c.scrollTop=0;window.scrollTo(0,0);}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-go]');if(a){e.preventDefault();go(a.getAttribute('data-go'));}});
+/* The Guided Pathway runs in an iframe and asks for this tab by message. */
+window.addEventListener('message',function(e){var f=document.querySelector('#s0 iframe');if(f&&e.source===f.contentWindow&&e.data&&e.data.go==='s15')go('s15');});
+function L(id,t){return '<a href="#" data-go="'+id+'">'+t+'</a>';}
+function card(c,t,b){return '<div class="alert '+c+'"><div class="at">'+t+'</div>'+b+'</div>';}
+/* Checklist items are [state, text]: true met, false not met, null unknown, 'ind' individualized. */
+function ck(items){return '<ul class="pf-ck">'+items.map(function(i){
+ var s=i[0]===true?'<b class="y">&#10003;</b>':i[0]===false?'<b class="n">&#10007;</b>':i[0]==='ind'?'<b class="i">~</b>':'<b class="u">?</b>';
+ return '<li>'+s+' '+i[1]+'</li>';}).join('')+'</ul>';}
+function state(items){var f=false,u=false,ind=false;items.forEach(function(i){if(i[0]===false)f=true;else if(i[0]===null)u=true;else if(i[0]==='ind')ind=true;});return f?'no':u?'unk':ind?'ind':'yes';}
+function all(a){return a.indexOf(false)>=0?false:a.indexOf(null)>=0?null:true;}
+
+function run(){
+ var t=v('rpTime'),ich=v('rpIch'),nihss=num('rpNihss'),dis=v('rpDis'),fang=v('rpFang'),occ=v('rpOccl'),asp=v('rpAspects'),pc=v('rpPc'),
+  core=num('rpCore'),tmax=num('rpTmax'),hypo=v('rpHypo'),mrs=v('rpMrs'),age=num('rpAge'),glob=v('rpGlob'),evt=v('rpEvt'),flair=v('rpFlair');
+ var hasN=!isNaN(nihss), hasAge=!isNaN(age);
+ /* Locally NIHSS >=6 counts as clearly disabling; an explicit "no" with NIHSS >=6 is flagged, not silently resolved. */
+ var disabling=dis==='yes'||(hasN&&nihss>=6);
+ var conflict=dis==='no'&&hasN&&nihss>=6;
+ var antLvo=occ==='ica'||occ==='m1'||occ==='pm2';
+ var havePerf=!isNaN(core)&&!isNaN(tmax);
+ var mm=havePerf?tmax-core:NaN, ratio=havePerf?(core>0?tmax/core:(tmax>0?Infinity:0)):NaN;
+ var tmp=havePerf&&mm>=15&&ratio>=1.8;   /* local target mismatch profile */
+ var early=t==='le45', mtEarly=t==='le45'||t==='45to6', mtLate=t==='6to24'||t==='unk', ext=t==='45to6'||t==='6to24'||t==='unk';
+ var perfTxt=havePerf?'core '+core+' mL, Tmax&gt;6 s '+tmax+' mL &rarr; mismatch '+Math.round(mm)+' mL, ratio '+(ratio===Infinity?'&infin;':ratio.toFixed(1)):'';
+ $('rpCalc').innerHTML=havePerf?'Computed: '+perfTxt+'. Local target mismatch profile (mismatch &ge;15 mL and ratio &ge;1.8): '+(tmp?'<b>met</b>':'not met')+'.'
+  :(v('rpCore')!==''||v('rpTmax')!==''?'Enter both volumes, or leave both blank if CTP was not done.':'');
+ $('rpPcField').hidden=occ!=='basilar';
+ var mrs01=(mrs===''||mrs==='unk')?null:mrs==='0-1';
+ var Lc=[],Tc=[],localExtYes=false,evtRow=null;
+ function T(title,body){Tc.push(card('ab','Trial evidence &middot; '+title,body));}
+
+ if(ich==='yes'){
+  Lc.push(card('ar','Hemorrhage on CT: not a reperfusion candidate','Acute intracranial hemorrhage is an absolute contraindication to TNK. Manage as hemorrhagic stroke: blood pressure control, reversal of anticoagulation, neurosurgical review.'));
+ } else if(!t){
+  Lc.push(card('ab','Start with time from last known well','Every local criterion depends on it.'));
+ } else if(t==='gt24'){
+  Lc.push(card('ar','Beyond 24 hours: no code stroke','Local protocol: non-emergent workup and imaging only, no CT perfusion, no acute reperfusion therapy.'));
+ } else {
+  if(t==='unk')Lc.push(card('ab','LKW unknown','Treated as the 4.5–24 h window, as in the local imaging protocol. The 6–24 h thrombectomy rows are applied.'));
+  if(conflict)Lc.push(card('aa','Check the disabling answer','You recorded a <b>non-disabling</b> deficit with <b>NIHSS '+nihss+'</b>. Locally, NIHSS &ge;6 counts as clearly disabling. Correct one or the other, because this decides treatment.'));
+
+  /* ---------------- IV TNK */
+  if(early){
+   if(disabling)Lc.push(card('ag','IV TNK: eligible (AHA 2026 Class I)','Within 4.5 h with a disabling deficit and no hemorrhage. Treat on NCCT alone; do not wait for CTA/CTP. BP must be &lt;185/110 before the bolus.'+
+     (antLvo||occ==='basilar'?' <b>Give TNK and assess thrombectomy in parallel.</b> Neither should wait for the other.':'')+
+     '<br>Before the bolus: '+L('s5','TNK Contraindications')+' &middot; '+L('s9','TNK Dosing')));
+   else if(dis==='no')Lc.push(card('aa','Non-disabling deficit: IV TNK not indicated (Class 3: No Benefit)','Trials failed to show IVT benefit for non-disabling deficits; dual antiplatelet therapy is preferred. Re-check with the ADL question: could they bathe, walk, toilet, groom and eat if this deficit persisted? '+L('s4','Disabling vs non-disabling')));
+   else Lc.push(card('ab','Is the deficit disabling?','Enter NIHSS (&ge;6 answers it) or answer the disabling question. '+L('s4','Examples')));
+  } else if(ext){
+   if(!occ||occ==='notdone'){
+    Lc.push(card('ab','Extended window: CTA and CT perfusion needed','Extended-window TNK and thrombectomy both depend on the vessel and the perfusion result. Order CT Code Stroke WITH Perfusion. '+L('s3','Imaging protocol')));
+   } else if(antLvo||occ==='basilar'){
+    if(evt==='prompt'){
+     Lc.push(card('ab','EVT takes priority: no extended-window TNK','Locally, extended-window TNK in LVO is only for patients not having EVT, or facing a delay to groin puncture of &ge;60–90 min. If eligible for both, EVT takes priority. '+L('s7','Extended TNK: LVO')));
+     T('Late IVT before EVT','TIMELESS and TNK-PLUS found no benefit from adding thrombolysis before thrombectomy in the late window, which supports the local rule that EVT takes priority.');
+    } else {
+     var tr=all([antLvo,hasN?(nihss>=6&&nihss<=25):null,havePerf?(core<70&&ratio>=1.8&&mm>=15):null]);
+     var ho=all([hasN?(nihss>=4&&nihss<=26):null,havePerf?(core<70&&ratio>=1.2&&mm>=10):null]);
+     var prof=(tr===true||ho===true)?true:(tr===false&&ho===false)?false:null;
+     var items=[
+      [evt===''?null:true,'Not an EVT candidate, or delay to groin puncture &ge;60–90 min'],
+      [hasAge?age>=18:null,'Age &ge;18'],
+      [mrs01,'Pre-stroke mRS 0–1'],
+      [prof,'NIHSS and CTP fit <b>TRACE-III</b> (ICA/M1/M2, NIHSS 6–25, core &lt;70 mL, ratio &ge;1.8, mismatch &ge;15 mL) or <b>HOPE</b> (any occlusion, NIHSS 4–26, core &lt;70 mL, ratio &ge;1.2, mismatch &ge;10 mL)'+(tr===true?': <b>TRACE-III profile met</b>':ho===true?': <b>HOPE profile only</b>':'')],
+      [hypo===''?null:hypo==='no','No large NCCT hypodensity exceeding the CTP core'],
+      [true,'No standard TNK contraindication: '+L('s5','run the list')]
+     ];
+     var s=state(items), tail=' Only with stroke neurology. '+L('s7','Full local criteria');
+     if(s==='yes'){localExtYes=true;Lc.push(card('ag','Extended-window TNK for LVO: meets local criteria (AHA 2026 Class 2b)',ck(items)+tail));}
+     else if(s==='no')Lc.push(card('ar','Extended-window TNK for LVO: local criteria not met',ck(items)+tail));
+     else Lc.push(card('aa','Extended-window TNK for LVO: incomplete',ck(items)+'Fill in the ? items.'+tail));
+     if(occ==='basilar')Lc.push(card('ab','Basilar occlusion not having EVT','The local non-LVO (OPTION) criteria also list a vertebrobasilar occlusion not eligible for EVT as a qualifying vessel, with a stricter core limit of &lt;50 mL. '+L('s6','Extended TNK: Non-LVO')));
+    }
+   } else {
+    /* Local non-LVO (OPTION) criteria. The local gate is FANG-D positive, OR a clearly disabling deficit, OR NIHSS >=6. */
+    var gate=(fang==='pos'||disabling)?true:(fang==='neg'&&dis==='no'&&hasN&&nihss<6)?false:null;
+    var nOk=!hasN?null:((nihss>=6&&nihss<=25)||(nihss>=4&&nihss<=5&&dis==='yes'))?true:(nihss>=4&&nihss<=5&&dis==='')?null:false;
+    var viaMri=!havePerf&&flair!=='';
+    var perfOk=havePerf?(core<50&&ratio>=1.2&&mm>=10):flair===''?null:flair==='yes';
+    var items2=[
+     [gate,'FANG-D positive, OR clearly disabling deficit, OR NIHSS &ge;6'],
+     [hasAge?age>=18:null,'Age &ge;18'],
+     [nOk,'NIHSS 6–25, or 4–5 with a disabling deficit'],
+     [mrs01,'Pre-stroke mRS 0–1'],
+     [perfOk,viaMri?'MRI DWI–FLAIR mismatch (local alternative when CTP is unavailable)':'CTP mismatch: core &lt;50 mL, ratio &ge;1.2, mismatch &ge;10 mL'],
+     [hypo===''?null:hypo==='no','No extensive NCCT hypodensity, and NCCT hypodensity not larger than the CTP core'],
+     [occ==='mevo'?true:'ind','Qualifying vessel: M2, M3–M4, ACA, PCA, stenosis, or vertebrobasilar occlusion not eligible for EVT'+(occ==='none'?'. <i>No visible occlusion is not listed among the local qualifying vessels; confirm with stroke neurology.</i>':'')],
+     [true,'No standard TNK contraindication: '+L('s5','run the list')]
+    ];
+    var s2=state(items2), tail2=' Only with stroke neurology. '+L('s6','Full local criteria');
+    if(s2==='yes'){localExtYes=true;Lc.push(card('ag','Extended-window TNK, non-LVO (OPTION): meets local criteria',ck(items2)+tail2));}
+    else if(s2==='no')Lc.push(card('ar','Extended-window TNK, non-LVO (OPTION): local criteria not met',ck(items2)+tail2));
+    else if(s2==='ind')Lc.push(card('aa','Extended-window TNK, non-LVO (OPTION): discuss with stroke neurology',ck(items2)+'Every other local criterion is met, but no visible occlusion is not a listed qualifying vessel.'+tail2));
+    else Lc.push(card('aa','Extended-window TNK, non-LVO (OPTION): incomplete',ck(items2)+'Fill in the ? items.'+tail2));
+    T('OPTION and the AHA guideline','OPTION (JAMA 2026) postdates the 2026 AHA/ASA guideline\'s literature cut-off and so carries <b>no class of recommendation</b>. The local protocol adopts it. Result: mRS 0–1 at 90 days 43.6% vs 34.2% (RR 1.28); sICH 2.8% vs 0%.');
+   }
+   /* EXTEND: AHA 2026 COR 2a for perfusion-selected IVT 4.5-9 h in patients not eligible for EVT. */
+   if(!localExtYes&&havePerf&&ratio>1.2&&mm>10&&core<70&&!(antLvo&&evt==='prompt')&&t!=='unk')
+    T('4.5–9 h, EXTEND profile met','For patients not eligible for thrombectomy, AHA 2026 rates IVT within 4.5–9 h of LKW with salvageable penumbra (ratio &gt;1.2, mismatch &gt;10 mL, core &lt;70 mL) as <b>COR 2a</b> (EXTEND, ECASS-4). This only applies if the patient is still within 9 h.');
+   if(t==='unk'&&flair==='yes')
+    T('Wake-up stroke with DWI–FLAIR mismatch','AHA 2026 <b>COR 2a</b>: for unknown-onset stroke with a DWI lesion and no matching FLAIR change, IVT within 4.5 h of symptom recognition can be beneficial (WAKE-UP). This route stands on the MRI alone; perfusion imaging is not needed.');
+  }
+
+  /* ---------------- Thrombectomy */
+  if(occ==='basilar'){
+   Lc.push(card('aa','Basilar occlusion: not covered by the local EVT table','The local thrombectomy criteria are written for ICA/MCA occlusion. Discuss with stroke neurology and neurointerventional. '+L('s8','EVT Eligibility')));
+   var bas='AHA 2026: EVT within 24 h is <b>COR 1</b> for basilar occlusion with baseline mRS 0–1, NIHSS &ge;10 and PC-ASPECTS &ge;6 (ATTENTION, BAOCHE). With NIHSS 6–9 and the same imaging, effectiveness is not well established (<b>COR 2b</b>). PC-ASPECTS &lt;6 is outside the trial evidence. ';
+   var fit=pc==='lt6'?'This patient: PC-ASPECTS &lt;6, which is <b>outside</b> the trial population.'
+    :(pc==='ge6'&&mrs==='0-1'&&hasN&&nihss>=10)?'This patient fits the <b>COR 1</b> profile.'
+    :(pc==='ge6'&&mrs==='0-1'&&hasN&&nihss>=6)?'This patient fits the <b>COR 2b</b> profile.'
+    :(hasN&&nihss<6)?'NIHSS below 6 falls outside both basilar rows.'
+    :'Enter PC-ASPECTS, NIHSS and pre-stroke mRS to place this patient.';
+   T('Basilar thrombectomy',bas+fit);
+  } else if(occ==='mevo'){
+   Lc.push(card('ab','Medium or distal vessel: outside the local EVT criteria','The local thrombectomy criteria cover ICA, M1 and proximal M2 only. '+L('s8','EVT Eligibility')));
+   T('Medium and distal vessel thrombectomy','AHA 2026 rates EVT for nondominant or codominant proximal M2, distal MCA, ACA and PCA occlusions <b>COR 3: No Benefit</b>. ESCAPE-MeVO and DISTAL showed no functional benefit. This agrees with the local protocol.');
+  } else if(antLvo){
+   var sev=disabling?true:(dis==='no'&&(!hasN||nihss<6))?false:null;
+   var win=mtEarly?'0–6 h':'6–24 h', row=null, rowTxt='', why='';
+   if(!asp){
+    Lc.push(card('ab','Thrombectomy: select ASPECTS','For ICA/M1/M2 occlusion, ASPECTS decides which local row applies.'));
+   } else if(mtLate&&asp==='6-10'&&!havePerf){
+    Lc.push(card('ab','Thrombectomy: enter the CTP volumes','Locally, the 6–24 h rows for ASPECTS &ge;6 are defined by core volume and target mismatch.'));
+   } else {
+    if(asp==='0-2'){why='ASPECTS 0–2 is not covered by any local EVT row.';}
+    else if(havePerf&&core>=150){why='A core of 150 mL or more is beyond every local EVT row.';}
+    else if(mtEarly){row=asp==='6-10'?'std':'large';rowTxt=asp==='6-10'?'ASPECTS &ge;6':'ASPECTS 3–5'+(havePerf?', core &lt;150 mL':'');}
+    else if(asp==='3-5'){row='large';rowTxt='ASPECTS 3–5'+(havePerf?', core &lt;150 mL':'');}
+    else if(core<50||(core<70&&tmp)){row='std';rowTxt='ASPECTS &ge;6 with core &lt;70 mL + target mismatch, or core &lt;50 mL';}
+    else {row='large';rowTxt='ASPECTS &ge;6 with core 70–150 mL, or core 50–70 mL without target mismatch';}
+    evtRow=row;
+    if(!row){
+     Lc.push(card('ar','Thrombectomy: no local EVT row matches',why+' Discuss with stroke neurology. '+L('s8','EVT Eligibility')));
+    } else {
+     var it=[[sev,'NIHSS &ge;6 or a disabling deficit']];
+     if(row==='std'){
+      it.push([true,'ICA, M1 or proximal M2']);
+      it.push([hasAge?age>=18:null,'Age &ge;18']);
+      it.push([mrs===''?null:(mrs==='0-1'||mrs==='2')?true:mrs==='5'?false:'ind',
+       mrs==='3-4'||mrs==='unk'?'Pre-stroke mRS 0–2. <i>mRS 3–4 or unknown: consider on an individualized basis if all radiographic criteria are met.</i>':mrs==='5'?'Pre-stroke mRS 0–2. mRS 5 is outside the local criteria.':'Pre-stroke mRS 0–2']);
+     } else {
+      it.push([occ!=='pm2','ICA or M1 (proximal M2 is not included in this row)']);
+      it.push([hasAge?(age>=18&&age<=85):null,'Age 18–85']);
+      it.push([mrs01,'Pre-stroke mRS 0–1, confirmed']);
+      it.push([glob===''?null:glob==='no','No global exclusion: hemodialysis, metastatic cancer, ventricular assist device, life expectancy &lt;1 year']);
+     }
+     var s3=state(it), head='Row: '+win+', '+rowTxt+(t==='unk'?' (LKW unknown)':'')+'.'+ck(it)+(row==='large'?'<b>Consent and confirmed pre-morbid mRS 0–1 required.</b> ':'');
+     var ft=' '+L('s8','EVT Eligibility');
+     if(s3==='yes')Lc.push(card('ag','Thrombectomy: meets local criteria (Class I)',head+'Aim for reperfusion as early as possible.'+ft));
+     else if(s3==='ind')Lc.push(card('aa','Thrombectomy: individualized decision',head+'Radiographic criteria met, but pre-stroke function is outside the standard row. Decide with stroke neurology and the family.'+ft));
+     else if(s3==='no')Lc.push(card('ar','Thrombectomy: local criteria not met',head+ft));
+     else Lc.push(card('aa','Thrombectomy: incomplete',head+'Fill in the ? items.'+ft));
+    }
+   }
+   /* Trial layer: where the published evidence adds to or differs from the local EVT rows. */
+   if(asp==='0-2'){
+    if(mtEarly)T('ASPECTS 0–2 within 6 h','AHA 2026 <b>COR 2a</b>: EVT is reasonable for ICA/M1 with ASPECTS 0–2 within 6 h if age &lt;80, pre-stroke mRS 0–1 and no significant mass effect (LASTE). mRS 0–2 at 90 days was 13.3% with EVT vs 4.9% with medical therapy; that number belongs in the family conversation.'+(hasAge&&age>=80?' <b>Age '+age+' is outside this recommendation</b>; LASTE excluded patients aged 80 and over.':''));
+    else T('ASPECTS 0–2 beyond 6 h','No recommendation: LASTE enrolled within 6.5 h only. Thrombectomy here is outside the evidence base.');
+   }
+   if(evtRow==='large'&&asp==='3-5'&&hasAge){
+    if(mtLate&&age>=80&&age<=85)T('Age 80–85 with a large core beyond 6 h','The AHA 2026 recommendation for ASPECTS 3–5 at 6–24 h specifies <b>age &lt;80</b>; SELECT2 and ANGEL-ASPECT under-enrolled older patients. The local protocol extends this row to 85.');
+    if(mtEarly&&age>85)T('Age over 85 with ASPECTS 3–5 within 6 h','The local row caps age at 85. The AHA 2026 recommendation for ASPECTS 3–5 within 6 h has <b>no age criterion</b>, and in HERMES the benefit of EVT persisted at age &ge;80 (common OR 3.68).');
+   }
+   if(evtRow==='std'&&mtLate&&mrs==='2')T('Pre-stroke mRS 2 beyond 6 h','The AHA 2026 6–24 h recommendations require pre-stroke mRS 0–1 (DAWN, DEFUSE 3). mRS 2 is supported only within 6 h (<b>COR 2a</b>). The local row accepts mRS 0–2 in both windows.');
+   if(mrs==='3-4')T('Pre-stroke mRS 3–4','No completed randomized trial has tested thrombectomy in moderate pre-stroke disability. In cohort studies, 20–30% of these patients returned to their pre-stroke mRS. The goal to discuss is return to <i>their</i> baseline, not independence.');
+   if(occ==='pm2')T('Proximal M2','AHA 2026 rates EVT for a <b>dominant</b> proximal M2 within 6 h <b>COR 2a</b> (mRS 0–1, NIHSS &ge;6, ASPECTS &ge;6). Nondominant or codominant M2 is <b>COR 3: No Benefit</b>. Beyond 6 h there is no M2 recommendation.'+(mtLate?' The local 6–24 h row includes proximal M2.':''));
+   if(hasN&&nihss<6&&dis==='yes')T('LVO with NIHSS below 6','The pivotal thrombectomy trials enrolled NIHSS &ge;6. EVT for a disabling deficit at a lower score is outside the trial population.');
+  }
+ }
+ if(!Lc.length)Lc.push(card('ab','Not enough information yet','Fill in the fields above.'));
+ $('rpLocal').innerHTML=Lc.join('');
+ $('rpTrialCards').innerHTML=Tc.length?Tc.join(''):'<p class="src">Nothing beyond the local protocol for these inputs.</p>';
+ $('rpTrialOut').hidden=!$('rpTrials').checked;
+}
+
+var fields=['rpTime','rpIch','rpNihss','rpDis','rpFang','rpOccl','rpAspects','rpPc','rpCore','rpTmax','rpHypo','rpMrs','rpAge','rpGlob','rpEvt','rpFlair'];
+fields.forEach(function(id){$(id).addEventListener('input',run);$(id).addEventListener('change',run);});
+$('rpTrials').addEventListener('change',run);
+$('rpReset').addEventListener('click',function(){
+ fields.forEach(function(id){var e=$(id);if(e.tagName==='SELECT'){var d=0;Array.prototype.forEach.call(e.options,function(o,i){if(o.defaultSelected)d=i;});e.selectedIndex=d;}else e.value='';});
+ run();
+});
+$('rpCopy').addEventListener('click',function(){
+ var btn=this;
+ function lab(id){var e=$(id);if(e.tagName!=='SELECT')return e.value||'—';return e.value===''?'—':e.options[e.selectedIndex].textContent;}
+ var lines=['Reperfusion Pathfinder (Advocate protocol)',
+  'LKW: '+lab('rpTime'),'Hemorrhage: '+lab('rpIch'),'NIHSS: '+lab('rpNihss'),'Disabling: '+lab('rpDis'),'FANG-D: '+lab('rpFang'),
+  'Occlusion: '+lab('rpOccl'),'ASPECTS: '+lab('rpAspects')+(v('rpOccl')==='basilar'?' | PC-ASPECTS: '+lab('rpPc'):''),
+  'CTP: '+(v('rpCore')!==''&&v('rpTmax')!==''?'core '+v('rpCore')+' mL, Tmax>6s '+v('rpTmax')+' mL':'—'),
+  'NCCT hypodensity: '+lab('rpHypo'),'MRI DWI-FLAIR: '+lab('rpFlair'),'Pre-stroke mRS: '+lab('rpMrs'),'Age: '+lab('rpAge'),
+  'Global exclusions: '+lab('rpGlob'),'EVT access: '+lab('rpEvt'),'',''];
+ function txt(sel){return Array.prototype.map.call(document.querySelectorAll(sel+' .alert'),function(a){
+  var c=a.cloneNode(true),h=c.querySelector('.at'),title=h?h.textContent.trim():'';if(h)h.remove();
+  Array.prototype.forEach.call(c.querySelectorAll('li'),function(li){li.textContent='\n  '+li.textContent.trim();});
+  Array.prototype.forEach.call(c.querySelectorAll('ul,br'),function(u){u.after('\n');});
+  return title+'\n'+c.textContent.replace(/[ \t]+/g,' ').trim();}).join('\n\n');}
+ var out=lines.join('\n')+txt('#rpLocal');
+ if($('rpTrials').checked&&document.querySelector('#rpTrialCards .alert'))out+='\n\nTRIAL EVIDENCE (beyond local protocol)\n'+txt('#rpTrialCards');
+ function done(){var o=btn.textContent;btn.textContent='Copied';setTimeout(function(){btn.textContent=o;},1400);}
+ function fb(){var ta=document.createElement('textarea');ta.value=out;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}ta.remove();done();}
+ if(navigator.clipboard)navigator.clipboard.writeText(out).then(done,fb);else fb();
+});
+run();
+})();
+</script>
 
 <div class="section" id="s1">
 <h2>Code Stroke Activation Criteria</h2>
@@ -282,11 +561,11 @@ document.getElementById(this.dataset.t).classList.add('active');
 
 <div class="section" id="s6">
 <h2>Extended Window IV TNK: Non-LVO / MeVO / DVO</h2>
-<p><em style="color:#6c757d">4.5–24 hours • Based on OPTION trial • Limited to FANG-D positive patients</em></p>
+<p><em style="color:#6c757d">4.5–24 hours • Based on OPTION trial • FANG-D positive, disabling deficit, or NIHSS ≥ 6</em></p>
 <div class="alert ab"><div class="at">OPTION Trial (JAMA 2026)</div>IV TNK 0.25 mg/kg in non-LVO with salvageable tissue: mRS 0–1 at 90d: 43.6% vs 34.2% (RR 1.28, P=0.02, NNT=11). sICH: 2.8% vs 0%.</div>
 <h3>Inclusion Criteria</h3>
 <div class="cl"><ul>
-<li>Age ≥ 18</li><li><b>FANG-D positive</b> (local requirement)</li><li>NIHSS 6–25 (or 4–5 with disabling deficit)</li><li>Pre-stroke mRS 0 or 1</li><li>LKW <b>4.5 to 24 hours</b></li>
+<li>Age ≥ 18</li><li><b>FANG-D positive, OR clearly disabling deficit, OR NIHSS ≥ 6</b> (local requirement)</li><li>NIHSS 6–25 (or 4–5 with disabling deficit)</li><li>Pre-stroke mRS 0 or 1</li><li>LKW <b>4.5 to 24 hours</b></li>
 <li>Qualifying vessel: M2, M3-M4, ACA, PCA, stenosis, or <b>vertebrobasilar occlusion not eligible for EVT</b></li>
 <li><b>CTP mismatch:</b> core &lt;50 mL, ratio ≥1.2, mismatch vol ≥10 mL</li></ul></div>
 <h3>Exclusion Criteria</h3>
@@ -294,7 +573,7 @@ document.getElementById(this.dataset.t).classList.add('active');
 <li><b>Extensive hypodensity on NCCT</b> (clear hypodensity responsible for symptoms — density greater than contralateral unaffected white matter)</li>
 <li><b>NCCT hypodensity larger than CTP-defined ischemic core</b> (mismatch inconsistency — significantly higher sICH risk)</li>
 <li><b>LVO present (ICA, M1, or vertebrobasilar) AND planned EVT</b></li>
-<li>Pre-stroke mRS &gt; 1</li><li>No CTP mismatch</li><li><b>FANG-D negative</b> (current local restriction)</li></ul></div>
+<li>Pre-stroke mRS &gt; 1</li><li>No CTP mismatch</li><li><b>FANG-D negative AND non-disabling AND NIHSS &lt; 6</b> (local restriction)</li></ul></div>
 <div class="alert ar"><div class="at">Important</div>All absolute and relative contraindications for IV TNK within the standard 4.5-hour window (see TNK Contraindications tab) also apply to extended-window treatment. Review before administering.</div>
 <div class="alert aa"><div class="at">Safety Note</div>sICH: 2.8% vs 0%. Two of 21 patients with NCCT hypodensity larger than perfusion-defined core developed sICH. Carefully evaluate NCCT alongside perfusion.</div>
 <div class="alert ab"><div class="at">If CTP Not Available or Technically Limited</div>STAT MRI brain with DWI-FLAIR mismatch can be considered to determine eligibility: presence of DWI lesion with absence of corresponding FLAIR lesion indicates salvageable tissue.</div>
