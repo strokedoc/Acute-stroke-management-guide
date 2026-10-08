@@ -129,8 +129,9 @@ document.getElementById(this.dataset.t).classList.add('active');
 </div>
 <p class="pf-h">The vessels &amp; perfusion</p>
 <div class="pf-grid">
+<div><label for="rpTerr">Territory</label><select id="rpTerr"><option value="">Select…</option><option value="anterior">Anterior circulation</option><option value="posterior">Posterior circulation</option></select></div>
 <div><label for="rpOccl">Occlusion on CTA</label><select id="rpOccl"><option value="">Select…</option><option value="ica">ICA</option><option value="m1">M1</option><option value="pm2">Proximal M2</option><option value="basilar">Basilar</option><option value="mevo">M2 (non-proximal), M3–M4, ACA, PCA, stenosis, or vertebral</option><option value="none">No occlusion seen</option><option value="notdone">CTA not done yet</option></select></div>
-<div id="rpPcField" hidden><label for="rpPc">PC-ASPECTS</label><select id="rpPc"><option value="">Select…</option><option value="ge6">6 or more</option><option value="lt6">Less than 6</option></select></div>
+<div id="rpPcField" hidden><label for="rpPc">PC-ASPECTS</label><select id="rpPc"><option value="">Select…</option><option value="ge7">7 – 10</option><option value="6">6</option><option value="lt6">Less than 6</option></select></div>
 <div><label for="rpCore">CTP core, mL (rCBF &lt;30%)</label><input type="number" id="rpCore" min="0" step="1" inputmode="decimal" placeholder="Blank if no CTP"></div>
 <div><label for="rpTmax">CTP Tmax &gt;6 s, mL</label><input type="number" id="rpTmax" min="0" step="1" inputmode="decimal" placeholder="Blank if no CTP"></div>
 <div><label for="rpFlair">MRI DWI–FLAIR mismatch (if CTP not available)</label><select id="rpFlair"><option value="">MRI not done</option><option value="yes">Mismatch present</option><option value="no">No mismatch</option></select></div>
@@ -180,13 +181,15 @@ function state(items){var f=false,u=false,ind=false;items.forEach(function(i){if
 function all(a){return a.indexOf(false)>=0?false:a.indexOf(null)>=0?null:true;}
 
 function run(){
- var t=v('rpTime'),ich=v('rpIch'),nihss=num('rpNihss'),dis=v('rpDis'),fang=v('rpFang'),occ=v('rpOccl'),asp=v('rpAspects'),pc=v('rpPc'),
+ var terr=v('rpTerr'),t=v('rpTime'),ich=v('rpIch'),nihss=num('rpNihss'),dis=v('rpDis'),fang=v('rpFang'),occ=v('rpOccl'),asp=v('rpAspects'),pc=v('rpPc'),
   core=num('rpCore'),tmax=num('rpTmax'),hypo=v('rpHypo'),mrs=v('rpMrs'),age=num('rpAge'),glob=v('rpGlob'),evt=v('rpEvt'),flair=v('rpFlair');
  var hasN=!isNaN(nihss), hasAge=!isNaN(age);
  /* Locally NIHSS >=6 counts as clearly disabling; an explicit "no" with NIHSS >=6 is flagged, not silently resolved. */
  var disabling=dis==='yes'||(hasN&&nihss>=6);
  var conflict=dis==='no'&&hasN&&nihss>=6;
  var antLvo=occ==='ica'||occ==='m1'||occ==='pm2';
+ var post=terr==='posterior'||occ==='basilar', pc6=pc==='ge7'||pc==='6';
+ var seenOcc=antLvo||occ==='basilar'||occ==='mevo';
  var havePerf=!isNaN(core)&&!isNaN(tmax);
  var mm=havePerf?tmax-core:NaN, ratio=havePerf?(core>0?tmax/core:(tmax>0?Infinity:0)):NaN;
  var tmp=havePerf&&mm>=15&&ratio>=1.8;   /* local target mismatch profile */
@@ -194,7 +197,7 @@ function run(){
  var perfTxt=havePerf?'core '+core+' mL, Tmax&gt;6 s '+tmax+' mL &rarr; mismatch '+Math.round(mm)+' mL, ratio '+(ratio===Infinity?'&infin;':ratio.toFixed(1)):'';
  $('rpCalc').innerHTML=havePerf?'Computed: '+perfTxt+'. Local target mismatch profile (mismatch &ge;15 mL and ratio &ge;1.8): '+(tmp?'<b>met</b>':'not met')+'.'
   :(v('rpCore')!==''||v('rpTmax')!==''?'Enter both volumes, or leave both blank if CTP was not done.':'');
- $('rpPcField').hidden=occ!=='basilar';
+ $('rpPcField').hidden=!post;
  var mrs01=(mrs===''||mrs==='unk')?null:mrs==='0-1';
  var Lc=[],Tc=[],localExtYes=false,evtRow=null;
  function T(title,body){Tc.push(card('ab','Trial evidence &middot; '+title,body));}
@@ -214,6 +217,7 @@ function run(){
    if(disabling)Lc.push(card('ag','IV TNK: eligible (AHA 2026 Class I)','Within 4.5 h with a disabling deficit and no hemorrhage. Treat on NCCT alone; do not wait for CTA/CTP. BP must be &lt;185/110 before the bolus.'+
      (antLvo||occ==='basilar'?' <b>Give TNK and assess thrombectomy in parallel.</b> Neither should wait for the other.':'')+
      '<br>Before the bolus: '+L('s5','TNK Contraindications')+' &middot; '+L('s9','TNK Dosing')));
+   if(disabling&&antLvo)T('TNK before thrombectomy within 4.5 h','BRIDGE-TNK (NEJM 2025, post-guideline): in LVO within 4.5 h, tenecteplase before EVT gave functional independence (mRS 0–2) in 52.9% vs 44.1% with EVT alone (RR 1.20, 95% CI 1.01–1.43); sICH 8.5% vs 6.7%. This supports the local practice of giving TNK and proceeding to EVT without waiting.');
    else if(dis==='no')Lc.push(card('aa','Non-disabling deficit: IV TNK not indicated (Class 3: No Benefit)','Trials failed to show IVT benefit for non-disabling deficits; dual antiplatelet therapy is preferred. Re-check with the ADL question: could they bathe, walk, toilet, groom and eat if this deficit persisted? '+L('s4','Disabling vs non-disabling')));
    else Lc.push(card('ab','Is the deficit disabling?','Enter NIHSS (&ge;6 answers it) or answer the disabling question. '+L('s4','Examples')));
   } else if(ext){
@@ -222,7 +226,9 @@ function run(){
    } else if(antLvo||occ==='basilar'){
     if(evt==='prompt'){
      Lc.push(card('ab','EVT takes priority: no extended-window TNK','Locally, extended-window TNK in LVO is only for patients not having EVT, or facing a delay to groin puncture of &ge;60–90 min. If eligible for both, EVT takes priority. '+L('s7','Extended TNK: LVO')));
-     T('Late IVT before EVT','TIMELESS and TNK-PLUS found no benefit from adding thrombolysis before thrombectomy in the late window, which supports the local rule that EVT takes priority.');
+     T('Late IVT before EVT',occ==='basilar'
+      ?'ATTENTION LATE (JAMA 2026, post-guideline): basilar occlusion with NIHSS &ge;10 at 4.5–24 h, tenecteplase before EVT vs EVT alone: functional independence 30% vs 30%; sICH 5% vs 4%. Adding TNK before late basilar thrombectomy did not help, which supports the local rule that EVT takes priority.'
+      :'TIMELESS and TNK-PLUS found no benefit from adding thrombolysis before thrombectomy in the late window, which supports the local rule that EVT takes priority.');
     } else {
      var tr=all([antLvo,hasN?(nihss>=6&&nihss<=25):null,havePerf?(core<70&&ratio>=1.8&&mm>=15):null]);
      var ho=all([hasN?(nihss>=4&&nihss<=26):null,havePerf?(core<70&&ratio>=1.2&&mm>=10):null]);
@@ -239,6 +245,7 @@ function run(){
      if(s==='yes'){localExtYes=true;Lc.push(card('ag','Extended-window TNK for LVO: meets local criteria (AHA 2026 Class 2b)',ck(items)+tail));}
      else if(s==='no')Lc.push(card('ar','Extended-window TNK for LVO: local criteria not met',ck(items)+tail));
      else Lc.push(card('aa','Extended-window TNK for LVO: incomplete',ck(items)+'Fill in the ? items.'+tail));
+     if(occ==='basilar')T('Basilar occlusion without thrombectomy','TRACE-5 (Lancet 2026, post-guideline, no class of recommendation): basilar occlusion within 24 h, tenecteplase vs standard medical treatment, with about half going on to EVT: mRS 0–1 or return to baseline 38% vs 29% (adjusted RR 1.50); sICH 2% vs 3%; 90-day mortality 29% vs 31%. TRACE-III, the trial behind the AHA late-window LVO recommendation, enrolled ICA, M1 and M2 only, not basilar.');
      if(occ==='basilar')Lc.push(card('ab','Basilar occlusion not having EVT','The local non-LVO (OPTION) criteria also list a vertebrobasilar occlusion not eligible for EVT as a qualifying vessel, with a stricter core limit of &lt;50 mL. '+L('s6','Extended TNK: Non-LVO')));
     }
    } else {
@@ -267,17 +274,25 @@ function run(){
    /* EXTEND: AHA 2026 COR 2a for perfusion-selected IVT 4.5-9 h in patients not eligible for EVT. */
    if(!localExtYes&&havePerf&&ratio>1.2&&mm>10&&core<70&&!(antLvo&&evt==='prompt')&&t!=='unk')
     T('4.5–9 h, EXTEND profile met','For patients not eligible for thrombectomy, AHA 2026 rates IVT within 4.5–9 h of LKW with salvageable penumbra (ratio &gt;1.2, mismatch &gt;10 mL, core &lt;70 mL) as <b>COR 2a</b> (EXTEND, ECASS-4). This only applies if the patient is still within 9 h.');
+   if(post&&occ!=='basilar'&&dis!=='no'&&t!=='unk'){
+    var exp='EXPECTS (NEJM 2025, n=234, China, post-guideline, no class of recommendation): posterior circulation stroke at 4.5–24 h with no thrombectomy planned, NIHSS &ge;1 and PC-ASPECTS &ge;7 on DWI or NCCT. <b>No perfusion imaging was required.</b> Alteplase 0.9 mg/kg vs standard care: mRS 0–2 at 90 days 89.6% vs 72.6% (adjusted RR 1.16, 95% CI 1.03–1.30); sICH 1.7% vs 0.9%; death 5.2% vs 8.5%. Mostly mild strokes (median NIHSS 3), and the drug was alteplase, not tenecteplase. ';
+    T('Posterior circulation, 4.5–24 h',exp+(pc==='ge7'?'This patient: PC-ASPECTS &ge;7, so fits the EXPECTS imaging profile if thrombectomy is not planned.':pc?'This patient: PC-ASPECTS below 7, which is <b>outside</b> the EXPECTS population.':'Score PC-ASPECTS to place this patient.'));
+   }
    if(t==='unk'&&flair==='yes')
     T('Wake-up stroke with DWI–FLAIR mismatch','AHA 2026 <b>COR 2a</b>: for unknown-onset stroke with a DWI lesion and no matching FLAIR change, IVT within 4.5 h of symptom recognition can be beneficial (WAKE-UP). This route stands on the MRI alone; perfusion imaging is not needed.');
   }
+
+  if(dis==='no'&&!(hasN&&nihss>=6)&&(seenOcc||post))
+   T('Before settling on non-disabling',(seenOcc?'TEMPO-2 (Lancet 2024): tenecteplase for minor stroke (NIHSS 0–5) with a proven intracranial occlusion gave no benefit over standard care (return to baseline 72% vs 75%) and more deaths (5% vs 1%); the trial stopped for futility. A visible occlusion alone does not make a non-disabling deficit a thrombolysis indication. ':'')+
+    (post?'In the posterior circulation the NIHSS undersamples the deficit: vertigo, gait ataxia, dysphagia or a hemianopia can be disabling at a low score.':''));
 
   /* ---------------- Thrombectomy */
   if(occ==='basilar'){
    Lc.push(card('aa','Basilar occlusion: not covered by the local EVT table','The local thrombectomy criteria are written for ICA/MCA occlusion. Discuss with stroke neurology and neurointerventional. '+L('s8','EVT Eligibility')));
    var bas='AHA 2026: EVT within 24 h is <b>COR 1</b> for basilar occlusion with baseline mRS 0–1, NIHSS &ge;10 and PC-ASPECTS &ge;6 (ATTENTION, BAOCHE). With NIHSS 6–9 and the same imaging, effectiveness is not well established (<b>COR 2b</b>). PC-ASPECTS &lt;6 is outside the trial evidence. ';
    var fit=pc==='lt6'?'This patient: PC-ASPECTS &lt;6, which is <b>outside</b> the trial population.'
-    :(pc==='ge6'&&mrs==='0-1'&&hasN&&nihss>=10)?'This patient fits the <b>COR 1</b> profile.'
-    :(pc==='ge6'&&mrs==='0-1'&&hasN&&nihss>=6)?'This patient fits the <b>COR 2b</b> profile.'
+    :(pc6&&mrs==='0-1'&&hasN&&nihss>=10)?'This patient fits the <b>COR 1</b> profile.'
+    :(pc6&&mrs==='0-1'&&hasN&&nihss>=6)?'This patient fits the <b>COR 2b</b> profile.'
     :(hasN&&nihss<6)?'NIHSS below 6 falls outside both basilar rows.'
     :'Enter PC-ASPECTS, NIHSS and pre-stroke mRS to place this patient.';
    T('Basilar thrombectomy',bas+fit);
@@ -343,7 +358,7 @@ function run(){
  $('rpTrialOut').hidden=!$('rpTrials').checked;
 }
 
-var fields=['rpTime','rpIch','rpNihss','rpDis','rpFang','rpOccl','rpAspects','rpPc','rpCore','rpTmax','rpHypo','rpMrs','rpAge','rpGlob','rpEvt','rpFlair'];
+var fields=['rpTerr','rpTime','rpIch','rpNihss','rpDis','rpFang','rpOccl','rpAspects','rpPc','rpCore','rpTmax','rpHypo','rpMrs','rpAge','rpGlob','rpEvt','rpFlair'];
 fields.forEach(function(id){$(id).addEventListener('input',run);$(id).addEventListener('change',run);});
 $('rpTrials').addEventListener('change',run);
 $('rpReset').addEventListener('click',function(){
@@ -355,7 +370,7 @@ $('rpCopy').addEventListener('click',function(){
  function lab(id){var e=$(id);if(e.tagName!=='SELECT')return e.value||'—';return e.value===''?'—':e.options[e.selectedIndex].textContent;}
  var lines=['Reperfusion Pathfinder (Advocate protocol)',
   'LKW: '+lab('rpTime'),'Hemorrhage: '+lab('rpIch'),'NIHSS: '+lab('rpNihss'),'Disabling: '+lab('rpDis'),'FANG-D: '+lab('rpFang'),
-  'Occlusion: '+lab('rpOccl'),'ASPECTS: '+lab('rpAspects')+(v('rpOccl')==='basilar'?' | PC-ASPECTS: '+lab('rpPc'):''),
+  'Territory: '+lab('rpTerr'),'Occlusion: '+lab('rpOccl'),'ASPECTS: '+lab('rpAspects')+($('rpPcField').hidden?'':' | PC-ASPECTS: '+lab('rpPc')),
   'CTP: '+(v('rpCore')!==''&&v('rpTmax')!==''?'core '+v('rpCore')+' mL, Tmax>6s '+v('rpTmax')+' mL':'—'),
   'NCCT hypodensity: '+lab('rpHypo'),'MRI DWI-FLAIR: '+lab('rpFlair'),'Pre-stroke mRS: '+lab('rpMrs'),'Age: '+lab('rpAge'),
   'Global exclusions: '+lab('rpGlob'),'EVT access: '+lab('rpEvt'),'',''];
